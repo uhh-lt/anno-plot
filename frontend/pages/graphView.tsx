@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
-import { baseURL, getCodeTree } from "@/pages/api/api";
+import data from "../src/NER_Tags.json";
+import { getCodeTree } from "@/pages/api/api";
 import { Button } from "@mui/material";
 import Header from "@/components/Header";
 import CodeTreeView from "@/components/CodeTreeView";
@@ -12,12 +13,12 @@ import DotPlotComp, { DotPlotCompHandles } from "@/components/DotPlotComp";
 /**
  * Render graph view with dot plot graph with the possibility to edit nodes and train the graph
  */
-const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
+const DotPlotComponent: React.FC<any> = () => {
   const dotPlotRef = useRef<DotPlotCompHandles | null>(null);
   // From CodeView component
   const router = useRouter();
   const contextMenuRef = useRef<HTMLDivElement>(null);
-  const [jsonData, setJsonData] = useState({});
+  const [jsonData, setJsonData] = useState(data);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
   );
@@ -159,7 +160,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
         <DotPlotComp
           ref={dotPlotRef}
           projectId={projectId}
-          source={baseURL}
+          source="http://localhost:8000/"
           is_dynamic={config ? config.config.model_type === "dynamic" : undefined}
         />
       </div>

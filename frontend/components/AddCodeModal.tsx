@@ -14,8 +14,8 @@ interface AddCodeModalProps {
   setLoading: () => void;
 }
 
-function findCodePath(tree: any, code_id: any) {
-  let currentNode = tree.find((node: any) => node.code_id === code_id);
+function findCodePath(tree, code_id) {
+  let currentNode = tree.find(node => node.code_id === code_id);
   if (!currentNode) {
     return null; // the given code_id doesn't exist in the tree
   }
@@ -24,7 +24,7 @@ function findCodePath(tree: any, code_id: any) {
 
   // Traverse up the tree to get the path
   while (currentNode && currentNode.parent_code_id !== null) {
-    currentNode = tree.find((node: any) => node.code_id === currentNode.parent_code_id);
+    currentNode = tree.find(node => node.code_id === currentNode.parent_code_id);
     if (currentNode) {
       path = currentNode.text + "-" + path;
     }

@@ -14,8 +14,8 @@ interface AddToCodeModalProps {
   segmentId: number;
 }
 
-function findCodePath(tree: any, code_id: any) {
-  let currentNode = tree.find((node: any) => node.code_id === code_id);
+function findCodePath(tree, code_id) {
+  let currentNode = tree.find(node => node.code_id === code_id);
   if (!currentNode) {
     return null; // the given code_id doesn't exist in the tree
   }
@@ -24,7 +24,7 @@ function findCodePath(tree: any, code_id: any) {
 
   // Traverse up the tree to get the path
   while (currentNode && currentNode.parent_code_id !== null) {
-    currentNode = tree.find((node: any) => node.code_id === currentNode.parent_code_id);
+    currentNode = tree.find(node => node.code_id === currentNode.parent_code_id);
     if (currentNode) {
       path = currentNode.text + "-" + path;
     }
@@ -34,7 +34,7 @@ function findCodePath(tree: any, code_id: any) {
 }
 
 export default function ChangeCodeModal(props: AddToCodeModalProps) {
-  const [checkedId, setCheckedId] = React.useState<number | null>(null);
+  const [checkedId, setCheckedId] = React.useState(null);
   const [codeList, setCodeList] = React.useState<any[]>([]);
 
   useEffect(() => {
@@ -55,21 +55,21 @@ export default function ChangeCodeModal(props: AddToCodeModalProps) {
     props.handleClose();
   }
 
-  function pressAddButton() {
-    try {
-      console.log("try changing code");
-      console.log(checkedId);
-      console.log(props);
-      if (checkedId != null) {
-        addCodeToSegment(props.segmentId, props.projectId, checkedId).then(() => window.location.reload());
-      }
-    } catch (e) {
-      console.error("Error adding code:", e);
+    function pressAddButton() {
+            try {
+                console.log("try changing code")
+                console.log(checkedId)
+                console.log(props)
+                if (checkedId != null) {
+                    addCodeToSegment(props.segmentId, props.projectId, checkedId).then(() => window.location.reload());
+                }
+            } catch (e) {
+                console.error("Error adding code:", e);
+            }
+        setClosed();
+        //props.handleClose();
+        //window.location.reload(); // Reload the page
     }
-    setClosed();
-    //props.handleClose();
-    //window.location.reload(); // Reload the page
-  }
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 

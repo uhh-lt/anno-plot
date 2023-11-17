@@ -274,7 +274,7 @@ export default function Header(props: HeaderProps) {
         </div>
       </Drawer>
       <button className="ml-auto mr-5" onClick={() => router.push("/")}>
-        CodeGraph
+        AnnoPlot
       </button>
     </header>
   );

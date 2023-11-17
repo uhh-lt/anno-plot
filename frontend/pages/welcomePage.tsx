@@ -19,7 +19,7 @@ export default function WelcomePage() {
       <div className="content-center">
         <UploadModal open={open} handleClose={() => setOpen(false)} setLoading={() => setLoading(!loading)} />
         <LoadingModal open={loading} />
-        <h1 className="w-fit mx-auto my-20 text-2xl">Welcome to CodeGraph!</h1>
+        <h1 className="w-fit mx-auto my-20 text-2xl">Welcome to AnnoPlot!</h1>
         <div className="w-fit mx-auto border rounded-2xl p-10 text-center">
           <p>Please upload a dataset</p>
           <Button variant="contained" className="my-5" component="label" onClick={() => setOpen(true)}>

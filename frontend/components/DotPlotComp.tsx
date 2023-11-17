@@ -122,9 +122,24 @@ function newColorScale(code_id) {
 }
 
 class Dot {
-  private addToCode: () => void;
-  private setRightClickedId: (id: number) => void;
-  private dotId: number;
+  public addToCode: () => void;
+  public setRightClickedId: (id: number) => void;
+  public dotId: number;
+  public x: number;
+  public y: number;
+  public segment: number;
+  public sentence: string;
+  public code: number;
+  public codeText: string;
+  public cluster_id: number;
+  public cluster: boolean;
+  public color: any;
+  public plot: any;
+  public circle: null | d3.Selection<SVGCircleElement, any, any, any>;
+  public line: null | Line;
+  public tooltip: null | d3.Selection<HTMLDivElement, any, any, any>;
+  public suggestion: boolean;
+
   constructor(
     dotId,
     x,
@@ -345,7 +360,7 @@ class Dot {
       .style("left", absolutePosition.left + 10 + "px")
       .style("top", absolutePosition.top - 10 + "px")
       .style("display", "block")
-      .style("background-color", d3.color(this.color).copy({ opacity: 0.5 }));
+      .style("background-color", d3.color(this.color).copy({ opacity: 0.5 }).toString());
     this.tooltip
       .append("div")
       .text("Segment: " + this.segment)
@@ -412,6 +427,13 @@ class Dot {
 }
 
 class Line {
+  public element: null | d3.Selection<SVGLineElement, any, any, any>;
+  public start: Dot;
+  public end_x: number;
+  public end_y: number;
+  public hitbox: null | d3.Selection<SVGCircleElement, any, any, any>;
+  public dot: Dot;
+
   constructor(dot) {
     this.element = null;
     this.start = dot;
@@ -495,8 +517,29 @@ class Line {
 }
 
 class DotPlot {
-  private addToCode: () => void;
-  private setRightClickedId: (id: number) => void;
+  public addToCode: () => void;
+  public setRightClickedId: (id: number) => void;
+  public containerId: string;
+  public is_dynamic: boolean;
+  public train_button: any;
+  public fetched_data: any;
+  public list_update_callback: any;
+  public source: string;
+  public projectId: number;
+  public data: Dot[];
+  public lines: Line[];
+  public selected: number[];
+  public svg: any;
+  public cluster: boolean;
+  public button_is_set: boolean;
+  public container: any;
+  public point_r: number;
+  public zoom: any;
+  public filter: any;
+  public tree: any;
+  public color_mapper: any;
+  public stopTraining: boolean;
+
   constructor(
     containerId,
     projectId,
@@ -846,21 +889,23 @@ export interface DotPlotCompHandles {
 const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) => {
   const { projectId, source } = props;
   const [is_dynamic, set_dynamic] = useState(props.is_dynamic);
-  const [rightClickedItemId, setRightClickedItemId] = useState();
+  const [rightClickedItemId, setRightClickedItemId] = useState<number>();
   const pendingFilterRef = useRef<any>(null);
   const pendingButtonRef = useRef<any>(null);
   const canvasRef = useRef<SVGSVGElement>(null);
   const trainButtonRef = useRef<HTMLButtonElement>(null);
-  const [items, setItems] = useState<Item[]>([]);
+  //const [items, setItems] = useState<any[]>([]);
   const isInitializedRef = useRef(false);
   const [plot, setPlot] = useState<any>();
   const [train, setTrain] = useState<any>();
-  const [plotItems, setPlotItems] = useState<any[]>([]);
+  const [plotItems, setPlotItems] = useState<any>([]);
   const [openChangeCodeModal, setChangeCodeModal] = useState(false);
   const handleDataUpdate = (plot_this) => {
     const value = [...(plot_this?.getList() || [])];
     setPlotItems(value);
   };
+
+  DotPlotComp.displayName = "DotPlotComp";
 
   useImperativeHandle(ref, () => ({
     setPlotFilter: (filterValue: any) => {
@@ -1070,7 +1115,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
       {is_dynamic && (
         <div className="itemListContainer">
           <ItemList
-            items={plotItems}
+            items={plotItems || []}
             onDelete={handleDeleteItem}
             onTrain={(plot) => {
               console.log("wanting to train lines, plot: ", plot);
@@ -1082,6 +1127,5 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
     </div>
   );
 });
-DotPlotComp.displayName = "DotPlotComp";
 
 export default DotPlotComp;

@@ -1,14 +1,15 @@
 import * as d3 from "d3";
-
+//import { getidToColorMap } from "@/components/CodeDotPlotter";
 /**
  * This class represents a visual dot associated with a code. It is used for rendering and interacting with code dots
  * within a plot.
  */
 
-// function newColorScale(code_id: any) {
-//   return idToColorMap[code_id] || "#808080"; // Fallback to gray
-// }
-function findCodePath(tree: any, code_id: any, currentPath = "") {
+/*function newColorScale(code_id) {
+  return getidToColorMap()[code_id] || "#808080"; // Fallback to gray
+}*/
+
+function findCodePath(tree, code_id, currentPath = "") {
   for (const key in tree) {
     const node = tree[key];
     const newPath = currentPath ? `${currentPath}-${node.name}` : node.name;
@@ -18,7 +19,7 @@ function findCodePath(tree: any, code_id: any, currentPath = "") {
     }
 
     const subcategories = node.subcategories;
-    const result: any = findCodePath(subcategories, code_id, newPath);
+    const result = findCodePath(subcategories, code_id, newPath);
     if (result) return result;
   }
   return null;
@@ -81,7 +82,6 @@ class CodeDot {
       this.y = Math.random() * 100;
     }
   }
-
   setRadius(radius: number) {
     this.radius = radius;
     this.plot.point_r = radius;
@@ -98,7 +98,7 @@ class CodeDot {
       .attr("cx", this.x)
       .attr("cy", this.y)
       .attr("r", this.radius)
-      .attr("fill", d3.color(this.color)!.copy({ opacity: 0.5 }));
+      .attr("fill", d3.color(this.color).copy({ opacity: 0.5 }));
 
     this.label = plotter.container
       .append("text")

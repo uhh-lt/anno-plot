@@ -7,8 +7,8 @@ import { getCodeStats } from "@/pages/api/api";
  * This class is responsible for managing and rendering a plot of CodeDot instances (codes) within an SVG container. It includes
  * methods for handling zoom behavior and data filtering.
  */
-
-function hsvToRgb(h: number, s: number, v: number) {
+// TODO Check type again of commit 8090ddc000af2cd0ca954d38d4384428ab0c5a84
+function hsvToRgb(h, s, v) {
   let r, g, b;
   let i = Math.floor(h * 6);
   let f = h * 6 - i;
@@ -34,19 +34,16 @@ function hsvToRgb(h: number, s: number, v: number) {
     case 5:
       (r = v), (g = p), (b = q);
       break;
-    default:
-      (r = 0), (g = 0), (b = 0);
-      break;
   }
   return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
 }
 
-const idToColorMap: Record<any, string> = {};
-function newColorScale(code_id: any) {
+const idToColorMap = {};
+function newColorScale(code_id) {
   return idToColorMap[code_id] || "#808080"; // Fallback to gray
 }
 function assignColors(
-  codes: any,
+  codes,
   hueOffset = 0,
   saturation = 100,
   value = 100,
@@ -118,6 +115,8 @@ class CodeDotPlotter {
   private deleteCode: () => void;
   private renameCode: () => void;
   private showCode: () => void;
+  private tree: any;
+  private color_mapper: any;
 
   constructor(
     containerId: string,
@@ -244,10 +243,10 @@ class CodeDotPlotter {
       return Promise.resolve(this.fetched_data);
     } else {
       return getCodeStats(this.projectId)
-        .then(async (codeStats) => {
+        .then(async (codeStats: any) => {
           console.log("Received codeStats response:", codeStats);
           if (codeStats) {
-            console.log("Code Stats Codes:", codeStats.code_segments_count.codes);
+            //console.log("Code Stats Codes:", codeStats.code_segments_count.codes);
             this.fetched_data = codeStats.code_segments_count.codes;
             this.minRadiusOfAllCodes = Math.min(
               ...codeStats.code_segments_count.codes.map((code: any) => Math.sqrt(code.segment_count)),
@@ -346,4 +345,5 @@ class CodeDotPlotter {
     console.log(this.data.length);
   }
 }
+
 export default CodeDotPlotter;

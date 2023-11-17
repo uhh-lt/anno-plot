@@ -3,7 +3,7 @@ import axios from "axios";
 import { CodeSegmentsResponse, ProjectStatsResponse, ClusterStatsResponse } from "@/pages/api/types";
 
 // Define the base URL of your FastAPI server
-export const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5500";
+const baseURL = "http://localhost:8000";
 const datasetName = "few_nerd";
 
 // Projects
@@ -326,7 +326,7 @@ export const getSentences = (project_id: number, dataset_id: number, page: numbe
 };
 
 // Plots
-// 'http://localhost:5500/projects/1/plots/?all=false&page=0&page_size=100'
+// 'http://localhost:8000/projects/1/plots/?all=false&page=0&page_size=100'
 export const getPlots = (project_id: number, all: boolean, page: number, page_size: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/plots/?all=${all}&page=${page}&page_size=${page_size}`);
   return axios.get<any>(`${baseURL}/projects/${project_id}/plots/?all=${all}&page=${page}&page_size=${page_size}`);
@@ -341,7 +341,7 @@ export const searchSentence = (project_id: number, search_query: string, limit: 
 // search code
 /*
 curl -X 'GET' \
-  'http://localhost:5500/projects/1/plots/code/?search_code_id=1&limit=100' \
+  'http://localhost:8000/projects/1/plots/code/?search_code_id=1&limit=100' \
   -H 'accept: application/json'
 */
 
@@ -355,7 +355,7 @@ export const searchCode = (project_id: number, search_code_id: number, limit: nu
 // search cluster
 /*
 curl -X 'GET' \
-  'http://localhost:5500/projects/1/plots/cluster/?search_cluster_id=1&limit=100' \
+  'http://localhost:8000/projects/1/plots/cluster/?search_cluster_id=1&limit=100' \
   -H 'accept: application/json'
 */
 
@@ -369,7 +369,7 @@ export const searchCluster = (project_id: number, search_cluster_id: number, lim
 // search segment
 /*
 curl -X 'GET' \
-  'http://localhost:5500/projects/1/plots/segment?search_segment_query=statdium&limit=100' \
+  'http://localhost:8000/projects/1/plots/segment?search_segment_query=statdium&limit=100' \
   -H 'accept: application/json'
 */
 

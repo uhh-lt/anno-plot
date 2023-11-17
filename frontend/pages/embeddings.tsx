@@ -15,7 +15,7 @@ type Embedding = {
 /**
  * Data page used to display embeddings with the possibility to export them
  */
-export default function DatabasesPage() {
+export default function Embeddings() {
   const [embeddings, setEmbeddings] = useState<Embedding[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);

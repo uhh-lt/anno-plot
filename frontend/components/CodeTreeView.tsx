@@ -57,7 +57,7 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({ taxonomyData, selectedNodes
     );
   };
 
-  const getAllChildIds = (node: undefined): number[] => {
+  const getAllChildIds = (node: any): number[] => {
     if (!node) return [];
     let ids = [node.id];
     for (let subcategoryKey in node.subcategories) {
