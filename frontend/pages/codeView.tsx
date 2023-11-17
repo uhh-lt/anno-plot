@@ -1,4 +1,3 @@
-import data from "../src/NER_Tags.json";
 import React, { useEffect, useRef, useState } from "react";
 import Header from "@/components/Header";
 import { Button } from "@mui/material";
@@ -34,7 +33,7 @@ export default function CodeView() {
   const [openRenameModal, setOpenRenameModal] = useState(false);
   const [openShowModal, setOpenShowModal] = useState(false);
   const [openDeleteCodeModal, setOpenDeleteCodeModal] = useState(false);
-  const [jsonData, setJsonData] = useState(data);
+  const [jsonData, setJsonData] = useState({});
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,

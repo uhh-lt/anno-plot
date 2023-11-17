@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from "react";
-import data from "../src/NER_Tags.json";
 import { baseURL, getCodeTree } from "@/pages/api/api";
 import { Button } from "@mui/material";
 import Header from "@/components/Header";
@@ -18,7 +17,7 @@ const DotPlotComponent: React.FC<IDotPlotComponentProps> = () => {
   // From CodeView component
   const router = useRouter();
   const contextMenuRef = useRef<HTMLDivElement>(null);
-  const [jsonData, setJsonData] = useState(data);
+  const [jsonData, setJsonData] = useState({});
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
   );
