@@ -1,0 +1,382 @@
+{
+  "0": {
+    "higherCategoryId": 0,
+    "higherCategoryName": "O",
+    "categoryName": "O"
+  },
+  "1": {
+    "higherCategoryId": 101,
+    "higherCategoryName": "art",
+    "categoryName": "broadcastprogram"
+  },
+  "2": {
+    "higherCategoryId": 101,
+    "higherCategoryName": "art",
+    "categoryName": "film"
+  },
+  "3": {
+    "higherCategoryId": 101,
+    "higherCategoryName": "art",
+    "categoryName": "music"
+  },
+  "4": {
+    "higherCategoryId": 101,
+    "higherCategoryName": "art",
+    "categoryName": "other"
+  },
+  "5": {
+    "higherCategoryId": 101,
+    "higherCategoryName": "art",
+    "categoryName": "painting"
+  },
+  "6": {
+    "higherCategoryId": 101,
+    "higherCategoryName": "art",
+    "categoryName": "writtenart"
+  },
+  "7": {
+    "higherCategoryId": 102,
+    "higherCategoryName": "building",
+    "categoryName": "airport"
+  },
+  "8": {
+    "higherCategoryId": 102,
+    "higherCategoryName": "building",
+    "categoryName": "hospital"
+  },
+  "9": {
+    "higherCategoryId": 102,
+    "higherCategoryName": "building",
+    "categoryName": "hotel"
+  },
+  "10": {
+    "higherCategoryId": 102,
+    "higherCategoryName": "building",
+    "categoryName": "library"
+  },
+  "11": {
+    "higherCategoryId": 102,
+    "higherCategoryName": "building",
+    "categoryName": "other"
+  },
+  "12": {
+    "higherCategoryId": 102,
+    "higherCategoryName": "building",
+    "categoryName": "restaurant"
+  },
+  "13": {
+    "higherCategoryId": 102,
+    "higherCategoryName": "building",
+    "categoryName": "sportsfacility"
+  },
+  "14": {
+    "higherCategoryId": 102,
+    "higherCategoryName": "building",
+    "categoryName": "theater"
+  },
+  "15": {
+    "higherCategoryId": 103,
+    "higherCategoryName": "event",
+    "categoryName": "militaryconflict"
+  },
+  "16": {
+    "higherCategoryId": 103,
+    "higherCategoryName": "event",
+    "categoryName": "disaster"
+  },
+  "17": {
+    "higherCategoryId": 103,
+    "higherCategoryName": "event",
+    "categoryName": "election"
+  },
+  "18": {
+    "higherCategoryId": 103,
+    "higherCategoryName": "event",
+    "categoryName": "other"
+  },
+  "19": {
+    "higherCategoryId": 103,
+    "higherCategoryName": "event",
+    "categoryName": "protest"
+  },
+  "20": {
+    "higherCategoryId": 103,
+    "higherCategoryName": "event",
+    "categoryName": "sportsevent"
+  },
+  "21": {
+    "higherCategoryId": 107,
+    "higherCategoryName": "location",
+    "categoryName": "GPE"
+  },
+  "22": {
+    "higherCategoryId": 107,
+    "higherCategoryName": "location",
+    "categoryName": "bodiesofwater"
+  },
+  "23": {
+    "higherCategoryId": 107,
+    "higherCategoryName": "location",
+    "categoryName": "island"
+  },
+  "24": {
+    "higherCategoryId": 107,
+    "higherCategoryName": "location",
+    "categoryName": "mountain"
+  },
+  "25": {
+    "higherCategoryId": 107,
+    "higherCategoryName": "location",
+    "categoryName": "other"
+  },
+  "26": {
+    "higherCategoryId": 107,
+    "higherCategoryName": "location",
+    "categoryName": "park"
+  },
+  "27": {
+    "higherCategoryId": 107,
+    "higherCategoryName": "location",
+    "categoryName": "transit"
+  },
+  "108": {
+    "higherCategoryId": 107,
+    "higherCategoryName": "location",
+    "categoryName": "road"
+  },
+  "109": {
+    "higherCategoryId": 108,
+    "higherCategoryName": "road",
+    "categoryName": "railway"
+  },
+  "110": {
+    "higherCategoryId": 109,
+    "higherCategoryName": "railway",
+    "categoryName": "highway"
+  },
+  "27": {
+    "higherCategoryId": 110,
+    "higherCategoryName": "highway",
+    "categoryName": "transit"
+  },
+  "111": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "organization"
+  },
+  "28": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "company"
+  },
+  "29": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "education"
+  },
+  "112": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "government"
+  },
+  "113": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "media"
+  },
+  "32": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "other"
+  },
+  "33": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "politicalparty"
+  },
+  "34": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "religion"
+  },
+  "35": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "showorganization"
+  },
+  "36": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "sportsleague"
+  },
+  "37": {
+    "higherCategoryId": 111,
+    "higherCategoryName": "organization",
+    "categoryName": "sportsteam"
+  },
+  "114": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "other"
+  },
+  "38": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "astronomything"
+  },
+  "39": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "award"
+  },
+  "40": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "biologything"
+  },
+  "41": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "chemicalthing"
+  },
+  "42": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "currency"
+  },
+  "43": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "disease"
+  },
+  "44": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "educationaldegree"
+  },
+  "45": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "god"
+  },
+  "46": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "language"
+  },
+  "47": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "law"
+  },
+  "48": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "livingthing"
+  },
+  "49": {
+    "higherCategoryId": 114,
+    "higherCategoryName": "other",
+    "categoryName": "medical"
+  },
+  "115": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "person"
+  },
+  "50": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "actor"
+  },
+  "116": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "artist"
+  },
+  "51": {
+    "higherCategoryId": 116,
+    "higherCategoryName": "artist",
+    "categoryName": "author"
+  },
+  "52": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "athlete"
+  },
+  "53": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "director"
+  },
+  "54": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "other"
+  },
+  "55": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "politician"
+  },
+  "56": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "scholar"
+  },
+  "57": {
+    "higherCategoryId": 115,
+    "higherCategoryName": "person",
+    "categoryName": "soldier"
+  },
+  "117": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "product"
+  },
+  "58": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "airplane"
+  },
+  "59": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "car"
+  },
+  "60": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "food"
+  },
+  "61": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "game"
+  },
+  "62": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "other"
+  },
+  "63": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "ship"
+  },
+  "64": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "software"
+  },
+  "65": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "train"
+  },
+  "66": {
+    "higherCategoryId": 117,
+    "higherCategoryName": "product",
+    "categoryName": "weapon"
+  }
+}

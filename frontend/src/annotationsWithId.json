@@ -1,0 +1,439 @@
+{
+  "O": {
+    "id": 1,
+    "name": "O",
+    "subcategories": {}
+  },
+  "person": {
+    "id": 2,
+    "name": "person",
+    "subcategories": {
+      "artist": {
+        "id": 3,
+        "name": "artist",
+        "subcategories": {
+          "author": {
+            "id": 4,
+            "name": "author",
+            "subcategories": {}
+          }
+        }
+      },
+      "actor": {
+        "id": 5,
+        "name": "actor",
+        "subcategories": {}
+      },
+      "director": {
+        "id": 6,
+        "name": "director",
+        "subcategories": {}
+      },
+      "other": {
+        "id": 7,
+        "name": "other",
+        "subcategories": {}
+      },
+      "athlete": {
+        "id": 8,
+        "name": "athlete",
+        "subcategories": {}
+      },
+      "scholar": {
+        "id": 9,
+        "name": "scholar",
+        "subcategories": {}
+      },
+      "soldier": {
+        "id": 10,
+        "name": "soldier",
+        "subcategories": {}
+      },
+      "politician": {
+        "id": 11,
+        "name": "politician",
+        "subcategories": {}
+      }
+    }
+  },
+  "art": {
+    "id": 12,
+    "name": "art",
+    "subcategories": {
+      "writtenart": {
+        "id": 13,
+        "name": "writtenart",
+        "subcategories": {}
+      },
+      "broadcastprogram": {
+        "id": 14,
+        "name": "broadcastprogram",
+        "subcategories": {}
+      },
+      "music": {
+        "id": 15,
+        "name": "music",
+        "subcategories": {}
+      },
+      "film": {
+        "id": 16,
+        "name": "film",
+        "subcategories": {}
+      },
+      "other": {
+        "id": 17,
+        "name": "other",
+        "subcategories": {}
+      },
+      "painting": {
+        "id": 18,
+        "name": "painting",
+        "subcategories": {}
+      }
+    }
+  },
+  "organization": {
+    "id": 19,
+    "name": "organization",
+    "subcategories": {
+      "other": {
+        "id": 20,
+        "name": "other",
+        "subcategories": {}
+      },
+      "company": {
+        "id": 21,
+        "name": "company",
+        "subcategories": {}
+      },
+      "sportsteam": {
+        "id": 22,
+        "name": "sportsteam",
+        "subcategories": {}
+      },
+      "sportsleague": {
+        "id": 23,
+        "name": "sportsleague",
+        "subcategories": {}
+      },
+      "government": {
+        "id": 24,
+        "name": "government",
+        "subcategories": {
+          "governmentagency": {
+            "id": 25,
+            "name": "governmentagency",
+            "subcategories": {}
+          }
+        }
+      },
+      "education": {
+        "id": 26,
+        "name": "education",
+        "subcategories": {}
+      },
+      "media": {
+        "id": 27,
+        "name": "media",
+        "subcategories": {
+          "newspaper": {
+            "id": 28,
+            "name": "newspaper",
+            "subcategories": {}
+          }
+        }
+      },
+      "showorganization": {
+        "id": 29,
+        "name": "showorganization",
+        "subcategories": {}
+      },
+      "politicalparty": {
+        "id": 30,
+        "name": "politicalparty",
+        "subcategories": {}
+      },
+      "religion": {
+        "id": 31,
+        "name": "religion",
+        "subcategories": {}
+      }
+    }
+  },
+  "product": {
+    "id": 32,
+    "name": "product",
+    "subcategories": {
+      "car": {
+        "id": 33,
+        "name": "car",
+        "subcategories": {}
+      },
+      "other": {
+        "id": 34,
+        "name": "other",
+        "subcategories": {}
+      },
+      "weapon": {
+        "id": 35,
+        "name": "weapon",
+        "subcategories": {}
+      },
+      "airplane": {
+        "id": 36,
+        "name": "airplane",
+        "subcategories": {}
+      },
+      "software": {
+        "id": 37,
+        "name": "software",
+        "subcategories": {}
+      },
+      "game": {
+        "id": 38,
+        "name": "game",
+        "subcategories": {}
+      },
+      "ship": {
+        "id": 39,
+        "name": "ship",
+        "subcategories": {}
+      },
+      "food": {
+        "id": 40,
+        "name": "food",
+        "subcategories": {}
+      },
+      "train": {
+        "id": 41,
+        "name": "train",
+        "subcategories": {}
+      }
+    }
+  },
+  "event": {
+    "id": 42,
+    "name": "event",
+    "subcategories": {
+      "protest": {
+        "id": 43,
+        "name": "protest",
+        "subcategories": {}
+      },
+      "other": {
+        "id": 44,
+        "name": "other",
+        "subcategories": {}
+      },
+      "sportsevent": {
+        "id": 45,
+        "name": "sportsevent",
+        "subcategories": {}
+      },
+      "election": {
+        "id": 46,
+        "name": "election",
+        "subcategories": {}
+      },
+      "attack": {
+        "id": 47,
+        "name": "attack",
+        "subcategories": {
+          "battle": {
+            "id": 48,
+            "name": "battle",
+            "subcategories": {
+              "war": {
+                "id": 49,
+                "name": "war",
+                "subcategories": {
+                  "militaryconflict": {
+                    "id": 50,
+                    "name": "militaryconflict",
+                    "subcategories": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "disaster": {
+        "id": 51,
+        "name": "disaster",
+        "subcategories": {}
+      }
+    }
+  },
+  "other": {
+    "id": 52,
+    "name": "other",
+    "subcategories": {
+      "biologything": {
+        "id": 53,
+        "name": "biologything",
+        "subcategories": {}
+      },
+      "language": {
+        "id": 54,
+        "name": "language",
+        "subcategories": {}
+      },
+      "chemicalthing": {
+        "id": 55,
+        "name": "chemicalthing",
+        "subcategories": {}
+      },
+      "law": {
+        "id": 56,
+        "name": "law",
+        "subcategories": {}
+      },
+      "astronomything": {
+        "id": 57,
+        "name": "astronomything",
+        "subcategories": {}
+      },
+      "award": {
+        "id": 58,
+        "name": "award",
+        "subcategories": {}
+      },
+      "educationaldegree": {
+        "id": 59,
+        "name": "educationaldegree",
+        "subcategories": {}
+      },
+      "disease": {
+        "id": 60,
+        "name": "disease",
+        "subcategories": {}
+      },
+      "currency": {
+        "id": 61,
+        "name": "currency",
+        "subcategories": {}
+      },
+      "livingthing": {
+        "id": 62,
+        "name": "livingthing",
+        "subcategories": {}
+      },
+      "medical": {
+        "id": 63,
+        "name": "medical",
+        "subcategories": {}
+      },
+      "god": {
+        "id": 64,
+        "name": "god",
+        "subcategories": {}
+      }
+    }
+  },
+  "location": {
+    "id": 65,
+    "name": "location",
+    "subcategories": {
+      "GPE": {
+        "id": 66,
+        "name": "GPE",
+        "subcategories": {}
+      },
+      "other": {
+        "id": 67,
+        "name": "other",
+        "subcategories": {}
+      },
+      "road": {
+        "id": 68,
+        "name": "road",
+        "subcategories": {
+          "railway": {
+            "id": 69,
+            "name": "railway",
+            "subcategories": {
+              "highway": {
+                "id": 70,
+                "name": "highway",
+                "subcategories": {
+                  "transit": {
+                    "id": 71,
+                    "name": "transit",
+                    "subcategories": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "mountain": {
+        "id": 72,
+        "name": "mountain",
+        "subcategories": {}
+      },
+      "island": {
+        "id": 73,
+        "name": "island",
+        "subcategories": {}
+      },
+      "bodiesofwater": {
+        "id": 74,
+        "name": "bodiesofwater",
+        "subcategories": {}
+      },
+      "park": {
+        "id": 75,
+        "name": "park",
+        "subcategories": {}
+      }
+    }
+  },
+  "building": {
+    "id": 76,
+    "name": "building",
+    "subcategories": {
+      "other": {
+        "id": 77,
+        "name": "other",
+        "subcategories": {}
+      },
+      "airport": {
+        "id": 78,
+        "name": "airport",
+        "subcategories": {}
+      },
+      "sportsfacility": {
+        "id": 79,
+        "name": "sportsfacility",
+        "subcategories": {}
+      },
+      "hospital": {
+        "id": 80,
+        "name": "hospital",
+        "subcategories": {}
+      },
+      "library": {
+        "id": 81,
+        "name": "library",
+        "subcategories": {}
+      },
+      "hotel": {
+        "id": 82,
+        "name": "hotel",
+        "subcategories": {}
+      },
+      "theater": {
+        "id": 83,
+        "name": "theater",
+        "subcategories": {}
+      },
+      "restaurant": {
+        "id": 84,
+        "name": "restaurant",
+        "subcategories": {}
+      }
+    }
+  }
+}

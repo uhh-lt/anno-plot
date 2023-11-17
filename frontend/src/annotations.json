@@ -1,0 +1,103 @@
+{
+  "O": {},
+  "person": {
+    "artist": {
+      "author": {}
+    },
+    "actor": {},
+    "director": {},
+    "other": {},
+    "athlete": {},
+    "scholar": {},
+    "soldier": {},
+    "politician": {}
+  },
+  "art": {
+    "writtenart": {},
+    "broadcastprogram": {},
+    "music": {},
+    "film": {},
+    "other": {},
+    "painting": {}
+  },
+  "organization": {
+    "other": {},
+    "company": {},
+    "sportsteam": {},
+    "sportsleague": {},
+    "government": {
+      "governmentagency": {}
+    },
+    "education": {},
+    "media": {
+      "newspaper": {}
+    },
+    "showorganization": {},
+    "politicalparty": {},
+    "religion": {}
+  },
+  "product": {
+    "car": {},
+    "other": {},
+    "weapon": {},
+    "airplane": {},
+    "software": {},
+    "game": {},
+    "ship": {},
+    "food": {},
+    "train": {}
+  },
+  "event": {
+    "protest": {},
+    "other": {},
+    "sportsevent": {},
+    "election": {},
+    "attack": {
+      "battle": {
+        "war": {
+          "militaryconflict": {}
+        }
+      }
+    },
+    "disaster": {}
+  },
+  "other": {
+    "biologything": {},
+    "language": {},
+    "chemicalthing": {},
+    "law": {},
+    "astronomything": {},
+    "award": {},
+    "educationaldegree": {},
+    "disease": {},
+    "currency": {},
+    "livingthing": {},
+    "medical": {},
+    "god": {}
+  },
+  "location": {
+    "GPE": {},
+    "other": {},
+    "road": {
+      "railway": {
+        "highway": {
+          "transit": {}
+        }
+      }
+    },
+    "mountain": {},
+    "island": {},
+    "bodiesofwater": {},
+    "park": {}
+  },
+  "building": {
+    "other": {},
+    "airport": {},
+    "sportsfacility": {},
+    "hospital": {},
+    "library": {},
+    "hotel": {},
+    "theater": {},
+    "restaurant": {}
+  }
+}

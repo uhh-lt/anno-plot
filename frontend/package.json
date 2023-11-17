@@ -1,0 +1,46 @@
+{
+  "name": "code-graph-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.6",
+    "@mui/lab": "^5.0.0-alpha.141",
+    "@mui/material": "^5.14.6",
+    "@mui/x-data-grid": "^6.9.0",
+    "@tanstack/react-table": "^8.10.3",
+    "@types/axios": "^0.14.0",
+    "@types/react-dom": "18.2.1",
+    "autoprefixer": "10.4.14",
+    "axios": "^1.4.0",
+    "d3": "^7.8.5",
+    "d3-context-menu": "^2.1.0",
+    "eslint": "8.39.0",
+    "eslint-config-next": "13.3.4",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "next": "13.3.4",
+    "postcss": "8.4.23",
+    "react": "18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.11.0",
+    "tailwindcss": "3.3.2"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.0",
+    "@types/node": "20.3.1",
+    "@types/react": "18.2.14",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "typescript": "5.1.3"
+  }
+}

@@ -1,0 +1,11 @@
+For easy editing, the JSON file should have a structure somewhat like this:
+
+[{id: 1, "daten": "highlighted_text", "origin": "sentence", "position": [ "x" , "y"], "topic_index": "code_name", "category": "user_category"}]
+
+maybe structure requests such that data only gets fetched with certain arguments (e.g. only with id and position)
+
+Requests:
+
+* GET /database (unklar ob auf gewisse Anzahl begrenzen, 2000 gehen locker, 5000 gehen okay, darüber kritisch)
+* POST/PUT /category (irgendwie dem Backend sagen welche categorien der user ausgesucht hat und mit welchen Punkten)
+* GET /embedding (vielleicht irgendwas bei dem man nur die position von punkten abfragt oder so)
