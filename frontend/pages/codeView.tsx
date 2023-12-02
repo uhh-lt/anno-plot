@@ -1,4 +1,3 @@
-//import data from "../src/NER_Tags.json";
 import React, { useEffect, useRef, useState } from "react";
 import Header from "@/components/Header";
 import { Button } from "@mui/material";
@@ -34,7 +33,7 @@ export default function CodeView() {
   const [openRenameModal, setOpenRenameModal] = useState(false);
   const [openShowModal, setOpenShowModal] = useState(false);
   const [openDeleteCodeModal, setOpenDeleteCodeModal] = useState(false);
-  const [jsonData, setJsonData] = useState([]);
+  const [jsonData, setJsonData] = useState<Record<string, Category>>({});
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
@@ -81,7 +80,7 @@ export default function CodeView() {
       const newPlot = new CodeDotPlotter(
         "container",
         projectId,
-        "http://localhost:8000/",
+        baseURL,
         svg_,
         container_,
         selectedNodes,
@@ -90,7 +89,7 @@ export default function CodeView() {
         handleOpenDelete,
         handleOpenRename,
         handleOpenShow,
-          setLoading,
+        setLoading,
       );
 
       setPlot(newPlot);

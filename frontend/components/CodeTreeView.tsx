@@ -7,7 +7,7 @@ import { Checkbox, TextField } from "@mui/material";
  * This component renders a tree view of codes and allows users to search for specific codes and select them.
  */
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
   subcategories: any;

@@ -1,9 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
-//import data from "../src/NER_Tags.json";
-import { getCodeTree } from "@/api/api";
+import { baseURL, getCodeTree } from "@/pages/api/api";
 import { Button } from "@mui/material";
 import Header from "@/components/Header";
-import CodeTreeView from "@/components/CodeTreeView";
+import CodeTreeView, { Category } from "@/components/CodeTreeView";
 import LoadingModal from "@/components/LoadingModal";
 import { useRouter } from "next/router";
 import { getConfig, updateConfig, recalculateEntries } from "@/api/api";
@@ -18,7 +17,7 @@ const DotPlotComponent: React.FC<any> = () => {
   // From CodeView component
   const router = useRouter();
   const contextMenuRef = useRef<HTMLDivElement>(null);
-  const [jsonData, setJsonData] = useState([]);
+  const [jsonData, setJsonData] = useState<Record<string, Category>>({});
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
   );
@@ -160,9 +159,9 @@ const DotPlotComponent: React.FC<any> = () => {
         <DotPlotComp
           ref={dotPlotRef}
           projectId={projectId}
-          source="http://localhost:8000/"
+          source={baseURL}
           is_dynamic={config ? config.config.model_type === "dynamic" : undefined}
-            setLoading={setLoading}
+          setLoading={setLoading}
         />
       </div>
       <div className="absolute right-5 bottom-5 ">
