@@ -24,7 +24,7 @@ RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bi
 # RUN tar -xvj -f mamba.tar.bz2 bin/micromamba
 # RUN rm mamba.tar.bz2
 
-# create the 'dwts' python environment with all dependencies
+# create the 'annoplot' python environment with all dependencies
 ENV MAMBA_ROOT_PREFIX=/opt
 COPY environment.yml .
 RUN micromamba create -f environment.yml -q -y &&\
@@ -35,7 +35,7 @@ RUN micromamba create -f environment.yml -q -y &&\
 
 # These settings & scripts are needed to automatically start any CMD in the container with the python environment
 ENV MAMBA_EXE="/bin/micromamba"
-ENV ENV_NAME=CodeGraph
+ENV ENV_NAME=AnnoPlot
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 COPY _entrypoint.sh /usr/local/bin/_entrypoint.sh
 COPY _activate_current_env.sh /usr/local/bin/_activate_current_env.sh
