@@ -647,7 +647,7 @@ class DotPlot {
       };
     });
     const jsonData = JSON.stringify(formattedData); // Convert the formatted data to JSON
-    fetch(this.source + "projects/" + this.projectId + "/dynamic/correction?epochs=3", {
+    fetch(this.source + "/projects/" + this.projectId + "/dynamic/correction?epochs=3", {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // Specify that we're sending JSON data
@@ -1077,7 +1077,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
             className="bg-blue-900 rounded "
             ref={trainButtonRef}
             onClick={() => {
-              fetch(source + "projects/" + projectId + "/clusters/errors?max_count=20", {
+              fetch(source + "/projects/" + projectId + "/clusters/errors?max_count=20", {
                 method: "GET",
                 headers: {
                   "Content-Type": "application/json", // Specify that we're sending JSON data

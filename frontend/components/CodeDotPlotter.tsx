@@ -181,7 +181,7 @@ class CodeDotPlotter {
 
   generateColors() {
     console.log("generating colors...");
-    const endpoint = this.source + "projects/" + this.projectId + "/codes/tree";
+    const endpoint = this.source + "/projects/" + this.projectId + "/codes/tree";
     return fetch(endpoint)
       .then((response) => response.json())
       .then((data) => {
