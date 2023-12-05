@@ -139,7 +139,6 @@ project/
 
 This is a Next.js-based web application used to display annotations and their clusters. 
 
-
 ## Requirements
 
 Ensure that a version of Node.js is installed:
