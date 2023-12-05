@@ -152,7 +152,13 @@ otherwise it can be downloaded [here](https://nodejs.org/de/download).
 
 ## Getting Started
 
-First, install packages:
+First, ensure that you are in the frontend directory:
+
+```bash
+cd frontend
+```
+
+Then, install packages:
 
 ```bash
 npm install
