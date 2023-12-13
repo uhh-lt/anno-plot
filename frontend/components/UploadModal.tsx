@@ -1,7 +1,9 @@
-import { Button, FormControlLabel, FormGroup, Modal, Switch, TextField } from "@mui/material";
-import React, { useState } from "react";
-import { postProject, uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
+import { Button, FormControlLabel, FormGroup, Modal, Switch, TextField, Select } from "@mui/material";
+import React, {useContext, useState} from "react";
+import { postProject, uploadAdvancedDataset, uploadDataset } from "@/api/api";
 import { useRouter } from "next/router";
+import {AppContext} from "@/context/AppContext";
+import MenuItem from "@mui/material/MenuItem";
 
 /**
  * This component displays a modal for uploading a dataset and configuring advanced settings if needed.
@@ -14,11 +16,14 @@ interface CategoryModalProps {
 }
 
 export default function UploadModal(props: CategoryModalProps) {
+  const {setCurrentProject, fetchProjects} = useContext(AppContext);
   const [projectName, setProjectName] = useState("");
   const [split, setSplit] = useState("\\t");
   const [sentenceSplit, setSentenceSplit] = useState("\\n\\n");
   const [wordIdx, setWordIdx] = useState(0);
+  const [rawWordInput, setRawWordInput] = useState("0");
   const [labelIdx, setLabelIdx] = useState(1);
+    const [rawLabelInput, setRawLabelInput] = useState("1");
   const [labelSplit, setLabelSplit] = useState("-");
   const [type, setType] = useState("plain");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -40,31 +45,27 @@ export default function UploadModal(props: CategoryModalProps) {
   const handleFinish = () => {
     props.handleClose();
     props.setLoading();
-    postProject(projectName).then((response) => {
+    postProject(projectName).then(async (response) => {
       const projectId = response.data.data.project_id;
       if (!advancedSettingsSelected) {
-        uploadDataset(projectId, projectName, selectedFile!).then(() => {
-          props.setLoading();
-          localStorage.setItem("projectId", projectId.toString());
-          router.push(`/codeView`);
-        });
+        await uploadDataset(projectId, projectName, selectedFile!);
       } else {
-        uploadAdvancedDataset(
-          projectId,
-          projectName,
-          selectedFile!,
-          encodeURIComponent(split),
-          encodeURIComponent(sentenceSplit),
-          wordIdx,
-          labelIdx,
-          encodeURIComponent(labelSplit),
-          encodeURIComponent(type),
-        ).then(() => {
-          props.setLoading();
-          localStorage.setItem("projectId", projectId.toString());
-          router.push(`/codeView`);
-        });
+        await uploadAdvancedDataset(
+            projectId,
+            projectName,
+            selectedFile!,
+            encodeURIComponent(split),
+            encodeURIComponent(sentenceSplit),
+            wordIdx,
+            labelIdx,
+            encodeURIComponent(labelSplit),
+            encodeURIComponent(type),
+        );
       }
+      await fetchProjects();
+      setCurrentProject(projectId);
+
+      //set current project
     });
   };
 
@@ -79,6 +80,7 @@ export default function UploadModal(props: CategoryModalProps) {
     setLabelSplit("None");
     setType("plain");
   }
+
 
   return (
     <>
@@ -135,25 +137,35 @@ export default function UploadModal(props: CategoryModalProps) {
                   onChange={(e) => setSentenceSplit(e.target.value)}
                 />
               </div>
+                            <div className="my-2">
+                <TextField
+  className="w-[25rem]"
+  id="standard-basic"
+  label="label_idx"
+  type="number"
+  value={rawLabelInput}
+  onChange={(e) => {
+    const value = e.target.value;
+    console.log(value);
+    setRawLabelInput(value);
+    setLabelIdx(value === '' ? 0 : parseInt(value, 10));
+  }}
+/>
+                              </div>
               <div className="my-2">
                 <TextField
-                  className="w-[25rem]"
-                  id="standard-basic"
-                  label="word_idx"
-                  type="number"
-                  value={wordIdx}
-                  onChange={(e) => setWordIdx(parseInt(e.target.value, 10))}
-                />
-              </div>
-              <div className="my-2">
-                <TextField
-                  className="w-[25rem]"
-                  id="standard-basic"
-                  label="label_idx"
-                  type="number"
-                  value={labelIdx}
-                  onChange={(e) => setLabelIdx(parseInt(e.target.value, 10))}
-                />
+  className="w-[25rem]"
+  id="standard-basic"
+  label="word_idx"
+  type="number"
+  value={rawWordInput}
+  onChange={(e) => {
+    const value = e.target.value;
+    console.log(value);
+    setRawWordInput(value);
+    setWordIdx(value === '' ? 0 : parseInt(value, 10));
+  }}
+/>
               </div>
               <div className="my-2">
                 <TextField
@@ -165,13 +177,18 @@ export default function UploadModal(props: CategoryModalProps) {
                 />
               </div>
               <div className="my-2">
-                <TextField
-                  className="w-[25rem]"
-                  id="standard-basic"
-                  label="type"
+                  <Select
+                  labelId="type-select-label"
+                  id="type-select"
                   value={type}
-                  onChange={(e) => setType(e.target.value)}
-                />
+                  label="Type"
+                  onChange={(event)=> setType(event.target.value as string)}
+                >
+                  <MenuItem value="plain">Plain</MenuItem>
+                  <MenuItem value="B-I-O">B-I-O</MenuItem>
+                </Select>
+
+
               </div>
             </div>
           )}

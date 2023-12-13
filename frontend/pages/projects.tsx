@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { getProjects, deleteProject, updateProjectName, postProject } from "@/pages/api/api";
+import React, {useState, useEffect, useContext} from "react";
+import { getProjects, deleteProject, updateProjectName, postProject } from "@/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import EditModal from "@/components/project/EditProjectModal";
@@ -9,6 +9,7 @@ import Delete from "@mui/icons-material/Delete";
 import ConfirmModal from "@/components/project/DeleteProjectModal";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Button } from "@mui/material";
+import {AppContext} from "@/context/AppContext";
 
 type Project = {
   project_name: string;
@@ -20,7 +21,8 @@ type Project = {
  * Menu page used as an overview of existing projects and a possibility to create new projects
  */
 export default function ProjectPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const {projects, fetchProjects} = useContext(AppContext);
+  //const [projects, setProjects] = useState<Project[]>([]);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -94,6 +96,14 @@ export default function ProjectPage() {
       ],
     },
   ];
+  // check how often the project is mounted and unmounted
+  useEffect(() => {
+    console.log('ProjectPage mounted');
+
+    return () => {
+      console.log('ProjectPage unmounted');
+    };
+  }, []);
 
   const table = useReactTable({
     columns,
@@ -103,29 +113,17 @@ export default function ProjectPage() {
     getCoreRowModel: getCoreRowModel(),
   });
   // Function to fetch and update project data
-  const fetchAndUpdateProjects = async () => {
-    try {
-      const result = await getProjects();
-      let projectData: Project[] = result.data.data;
-      setProjects(projectData);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAndUpdateProjects();
-  }, []);
 
   const handleDeleteProject = async (projectIdToDelete: number) => {
     try {
       await deleteProject(projectIdToDelete);
-      fetchAndUpdateProjects();
+      fetchProjects();
       setConfirmModalOpen(false);
     } catch (error) {
       console.error("Error deleting project:", error);
     } finally {
-      window.location.reload();
+      // TODO try
+      //window.location.reload();
     }
   };
 
@@ -137,24 +135,26 @@ export default function ProjectPage() {
   const handleEditProject = async (project: Project) => {
     try {
       await updateProjectName(project.project_id, project.project_name);
-      fetchAndUpdateProjects();
+      fetchProjects();
       setEditModalOpen(false);
     } catch (error) {
       console.error("Error editing project:", error);
     } finally {
-      window.location.reload();
+      //TODO try
+      //window.location.reload();
     }
   };
 
   const handleCreateProject = async (project_name: string) => {
     try {
       await postProject(project_name);
-      fetchAndUpdateProjects();
+      fetchProjects();
       setCreateModalOpen(false);
     } catch (error) {
       console.error("Error creating project:", error);
     } finally {
-      window.location.reload();
+      //TODO try
+      //window.location.reload();
     }
   };
 

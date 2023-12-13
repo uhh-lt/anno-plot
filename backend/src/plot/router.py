@@ -24,6 +24,8 @@ from project.service import ProjectService
 from reduced_embeddings.router import extract_embeddings_reduced_endpoint
 from utilities.locks import db_lock
 
+from utilities.timer import Timer
+
 # TODO: dont use the router, move stuff to services
 router = APIRouter()
 
@@ -36,48 +38,83 @@ async def get_plot_endpoint(
     page_size: int = 100,
     db: Session = Depends(get_db),
 ) -> PlotTable:
+    clusters = True
     async with db_lock:
         extract_embeddings_endpoint(project_id, db=db)
         extract_embeddings_reduced_endpoint(project_id, db=db)
-        extract_clusters_endpoint(project_id, db=db)
+        if clusters:
+            with Timer("Extracting clusters"):
+                extract_clusters_endpoint(project_id, db=db)
         db.commit()
     plots = []
 
-    ReducedEmbeddingAlias = aliased(ReducedEmbedding)
-    EmbeddingAlias = aliased(Embedding)
-    SegmentAlias = aliased(Segment)
-    SentenceAlias = aliased(Sentence)
-    CodeAlias = aliased(Code)
-    ProjectAlias = aliased(Project)
-    # get config id from project id
-    project: ProjectService = ProjectService(project_id, db)
-    model_entry = project.get_model_entry("cluster_config")
 
-    query = (
-        db.query(
-            Cluster,
-            ReducedEmbeddingAlias,
-            EmbeddingAlias,
-            SegmentAlias,
-            SentenceAlias,
-            CodeAlias,
-            ProjectAlias,
+
+    if clusters:
+        ReducedEmbeddingAlias = aliased(ReducedEmbedding)
+        EmbeddingAlias = aliased(Embedding)
+        SegmentAlias = aliased(Segment)
+        SentenceAlias = aliased(Sentence)
+        CodeAlias = aliased(Code)
+        ProjectAlias = aliased(Project)
+        # get config id from project id
+        project: ProjectService = ProjectService(project_id, db)
+        model_entry = project.get_model_entry("cluster_config")
+        query = (
+            db.query(
+                Cluster,
+                ReducedEmbeddingAlias,
+                EmbeddingAlias,
+                SegmentAlias,
+                SentenceAlias,
+                CodeAlias,
+                ProjectAlias,
+            )
+            .filter(ProjectAlias.project_id == project_id)
+            .filter(Cluster.model_id == model_entry.model_id)
+            .join(
+                ReducedEmbeddingAlias,
+                Cluster.reduced_embedding_id == ReducedEmbeddingAlias.reduced_embedding_id,
+            )
+            .join(
+                EmbeddingAlias,
+                ReducedEmbeddingAlias.embedding_id == EmbeddingAlias.embedding_id,
+            )
+            .join(SegmentAlias, EmbeddingAlias.segment_id == SegmentAlias.segment_id)
+            .join(SentenceAlias, SegmentAlias.sentence_id == SentenceAlias.sentence_id)
+            .join(CodeAlias, SegmentAlias.code_id == CodeAlias.code_id)
+            .join(ProjectAlias, CodeAlias.project_id == ProjectAlias.project_id)
         )
-        .filter(ProjectAlias.project_id == project_id)
-        .filter(Cluster.model_id == model_entry.model_id)
-        .join(
-            ReducedEmbeddingAlias,
-            Cluster.reduced_embedding_id == ReducedEmbeddingAlias.reduced_embedding_id,
+    else:
+        EmbeddingAlias = aliased(Embedding)
+        SegmentAlias = aliased(Segment)
+        SentenceAlias = aliased(Sentence)
+        CodeAlias = aliased(Code)
+        ProjectAlias = aliased(Project)
+        # get config id from project id
+        project: ProjectService = ProjectService(project_id, db)
+        model_entry = project.get_model_entry("reduction_config")
+        query = (
+            db.query(
+                ReducedEmbedding,
+                EmbeddingAlias,
+                SegmentAlias,
+                SentenceAlias,
+                CodeAlias,
+                ProjectAlias,
+            )
+            .filter(ProjectAlias.project_id == project_id)
+            .filter(ReducedEmbedding.model_id == model_entry.model_id)
+            .join(
+                EmbeddingAlias,
+                ReducedEmbedding.embedding_id == EmbeddingAlias.embedding_id,
+            )
+            .join(SegmentAlias, EmbeddingAlias.segment_id == SegmentAlias.segment_id)
+            .join(SentenceAlias, SegmentAlias.sentence_id == SentenceAlias.sentence_id)
+            .join(CodeAlias, SegmentAlias.code_id == CodeAlias.code_id)
+            .join(ProjectAlias, CodeAlias.project_id == ProjectAlias.project_id)
         )
-        .join(
-            EmbeddingAlias,
-            ReducedEmbeddingAlias.embedding_id == EmbeddingAlias.embedding_id,
-        )
-        .join(SegmentAlias, EmbeddingAlias.segment_id == SegmentAlias.segment_id)
-        .join(SentenceAlias, SegmentAlias.sentence_id == SentenceAlias.sentence_id)
-        .join(CodeAlias, SegmentAlias.code_id == CodeAlias.code_id)
-        .join(ProjectAlias, CodeAlias.project_id == ProjectAlias.project_id)
-    )
+
     count = query.count()
     response: PlotTable = {}
     if all:
@@ -85,19 +122,24 @@ async def get_plot_endpoint(
     else:
         plots = query.offset(page * page_size).limit(page_size).all()
         response.update({"page": page, "page_size": page_size})
+
+    index = 0
+    if not clusters:
+        index = -1
     result_dicts = [
         {
-            "id": row[3].segment_id,
-            "sentence": row[4].text,
-            "segment": row[3].text,
-            "code": row[5].code_id,
-            "reduced_embedding": {"x": row[1].pos_x, "y": row[1].pos_y},
-            "cluster": row[0].cluster,
+            "id": row[index + 3].segment_id,
+            "sentence": row[index + 4].text,
+            "segment": row[index + 3].text,
+            "start_position": row[index + 3].start_position,
+            "code": row[index + 5].code_id,
+            "reduced_embedding": {"x": row[index + 1].pos_x, "y": row[index + 1].pos_y},
+            "cluster": row[index + 0].cluster if clusters else -1,
         }
         for row in plots
     ]
-    response.update({"data": result_dicts, "length": len(result_dicts), "count": count})
 
+    response.update({"data": result_dicts, "length": len(result_dicts), "count": count})
     return response
 
 

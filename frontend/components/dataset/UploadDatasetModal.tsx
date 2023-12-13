@@ -1,6 +1,8 @@
-import { Button, FormControlLabel, FormGroup, Modal, Switch, TextField } from "@mui/material";
-import React, { useState } from "react";
-import { uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
+import {Button, FormControlLabel, FormGroup, Modal, Select, Switch, TextField} from "@mui/material";
+import React, {useContext, useState} from "react";
+import { uploadAdvancedDataset, uploadDataset } from "@/api/api";
+import {AppContext} from "@/context/AppContext";
+import MenuItem from "@mui/material/MenuItem";
 
 /**
  * This component displays a modal for uploading datasets, providing both basic and advanced settings.
@@ -9,13 +11,13 @@ import { uploadAdvancedDataset, uploadDataset } from "@/pages/api/api";
 interface CategoryModalProps {
   open: boolean;
   handleClose: () => void;
-  projectId: number;
   updateDatasets: () => void;
   setLoading: (loaded: boolean) => void;
   setSuccess: (exportSuccess: boolean) => void;
 }
 
 export default function UploadModal(props: CategoryModalProps) {
+  const {currentProject, fetchProject, setLoading} = useContext(AppContext);
   const [datasetName, setDatasetName] = useState<string>("");
   const [split, setSplit] = useState("\\t");
   const [sentenceSplit, setSentenceSplit] = useState("\\n\\n");
@@ -25,6 +27,8 @@ export default function UploadModal(props: CategoryModalProps) {
   const [type, setType] = useState("plain");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [advancedSettingsSelected, setAdvancedSettingsSelected] = useState(false);
+  const [rawWordInput, setRawWordInput] = useState("0");
+    const [rawLabelInput, setRawLabelInput] = useState("1");
 
   const handleDatasetNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDatasetName(event.target.value);
@@ -37,33 +41,29 @@ export default function UploadModal(props: CategoryModalProps) {
     }
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     props.handleClose();
     props.setLoading(true);
-
+    setLoading(true);
     if (!advancedSettingsSelected) {
-      uploadDataset(props.projectId, datasetName, selectedFile!).then(() => {
-        props.setLoading(false);
-        props.setSuccess(true);
-        props.updateDatasets();
-      });
+      await uploadDataset(currentProject, datasetName, selectedFile!);
     } else {
-      uploadAdvancedDataset(
-        props.projectId,
-        datasetName,
-        selectedFile!,
-        encodeURIComponent(split),
-        encodeURIComponent(sentenceSplit),
-        wordIdx,
-        labelIdx,
-        encodeURIComponent(labelSplit),
-        encodeURIComponent(type),
-      ).then(() => {
-        props.setLoading(false);
-        props.setSuccess(true);
-        props.updateDatasets();
-      });
+      await uploadAdvancedDataset(
+          currentProject,
+          datasetName,
+          selectedFile!,
+          encodeURIComponent(split),
+          encodeURIComponent(sentenceSplit),
+          wordIdx,
+          labelIdx,
+          encodeURIComponent(labelSplit),
+          encodeURIComponent(type),
+      );
     }
+    props.setLoading(false);
+    props.setSuccess(true);
+    props.updateDatasets();
+    await fetchProject();
   };
 
   function setClosed() {
@@ -74,7 +74,7 @@ export default function UploadModal(props: CategoryModalProps) {
     setSentenceSplit("\\n\\n");
     setWordIdx(0);
     setLabelIdx(1);
-    setLabelSplit("None");
+    setLabelSplit("-");
     setType("plain");
   }
 
@@ -83,7 +83,7 @@ export default function UploadModal(props: CategoryModalProps) {
       <Modal open={props.open} onClose={setClosed}>
         <div className="relative w-fit bg-white p-5 rounded-lg shadow mx-auto mt-[10vh] grid-cols-1 text-center">
           <div className="my-5">
-            <TextField className="w-[25rem]" id="standard-basic" label="Project ID" value={props.projectId} disabled />
+            <TextField className="w-[25rem]" id="standard-basic" label="Project ID" value={currentProject} disabled />
 
             <TextField
               className="w-[25rem]"
@@ -135,25 +135,35 @@ export default function UploadModal(props: CategoryModalProps) {
                   onChange={(e) => setSentenceSplit(e.target.value)}
                 />
               </div>
+                            <div className="my-2">
+                <TextField
+  className="w-[25rem]"
+  id="standard-basic"
+  label="label_idx"
+  type="number"
+  value={rawLabelInput}
+  onChange={(e) => {
+    const value = e.target.value;
+    console.log(value);
+    setRawLabelInput(value);
+    setLabelIdx(value === '' ? 0 : parseInt(value, 10));
+  }}
+/>
+                              </div>
               <div className="my-2">
                 <TextField
-                  className="w-[25rem]"
-                  id="standard-basic"
-                  label="word_idx"
-                  type="number"
-                  value={wordIdx}
-                  onChange={(e) => setWordIdx(parseInt(e.target.value, 10))}
-                />
-              </div>
-              <div className="my-2">
-                <TextField
-                  className="w-[25rem]"
-                  id="standard-basic"
-                  label="label_idx"
-                  type="number"
-                  value={labelIdx}
-                  onChange={(e) => setLabelIdx(parseInt(e.target.value, 10))}
-                />
+  className="w-[25rem]"
+  id="standard-basic"
+  label="word_idx"
+  type="number"
+  value={rawWordInput}
+  onChange={(e) => {
+    const value = e.target.value;
+    console.log(value);
+    setRawWordInput(value);
+    setWordIdx(value === '' ? 0 : parseInt(value, 10));
+  }}
+/>
               </div>
               <div className="my-2">
                 <TextField
@@ -165,13 +175,16 @@ export default function UploadModal(props: CategoryModalProps) {
                 />
               </div>
               <div className="my-2">
-                <TextField
-                  className="w-[25rem]"
+                <Select
+                  labelId="type-select-label"
                   id="standard-basic"
-                  label="type"
                   value={type}
-                  onChange={(e) => setType(e.target.value)}
-                />
+                  label="Type"
+                  onChange={(event)=> setType(event.target.value as string)}
+                >
+                  <MenuItem value="plain">Plain</MenuItem>
+                  <MenuItem value="B-I-O">B-I-O</MenuItem>
+                </Select>
               </div>
             </div>
           )}

@@ -1,5 +1,6 @@
 import json
 import shutil
+from io import BytesIO
 
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -68,6 +69,24 @@ async def upload_dataset(
 
     return {"filename": file.filename, "content_length": len(file_content)}
 
+
+@router.post("/test")
+async def upload_test_dataset(project_id: int, dataset_name: str, db: Session = Depends(session.get_db)):
+    test_file_path = "dataset/few_ner_small.txt"
+
+    with open(test_file_path, "r", encoding="utf-8") as file:
+        file_content = file.read()
+
+    file_bytes = BytesIO(file_content.encode("utf-8"))
+    test_file = UploadFile(filename=test_file_path, file=file_bytes)
+
+
+    await upload_dataset(
+        project_id=project_id,
+        dataset_name=dataset_name,
+        file=test_file,
+        db=db,
+    )
 
 @router.get("/")
 def get_datasets_route(project_id: int, db: Session = Depends(session.get_db)):

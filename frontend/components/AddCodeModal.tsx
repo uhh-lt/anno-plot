@@ -1,6 +1,6 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent } from "@/pages/api/api";
+import { getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent } from "@/api/api";
 
 /**
  * This component represents a modal for adding new codes. It provides the user

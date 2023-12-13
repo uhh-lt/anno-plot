@@ -90,6 +90,8 @@ class ProjectService:
             model_hash = self.get_reduction_hash()
         elif model_type == "cluster_config":
             model_hash = self.get_cluster_hash()
+        else:
+            raise HTTPException(status_code=400, detail="Invalid model type")
         return model_hash
 
     def get_model_entry(self, model_type):

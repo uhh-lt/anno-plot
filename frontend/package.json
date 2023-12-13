@@ -1,6 +1,7 @@
 {
   "name": "code-graph-frontend",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,19 +11,23 @@
     "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },
   "dependencies": {
+    "@d3fc/d3fc-webgl": "^3.2.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.6",
     "@mui/lab": "^5.0.0-alpha.141",
     "@mui/material": "^5.14.6",
     "@mui/x-data-grid": "^6.9.0",
+    "@mui/x-tree-view": "^6.17.0",
     "@tanstack/react-table": "^8.10.3",
     "@types/axios": "^0.14.0",
     "@types/react-dom": "18.2.1",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
     "d3": "^7.8.5",
+    "d3-array": "^3.2.4",
     "d3-context-menu": "^2.1.0",
+    "d3fc": "^15.2.6",
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.4",
     "express": "^4.18.2",
@@ -31,8 +36,11 @@
     "postcss": "8.4.23",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
+    "react-color": "^2.19.3",
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
+    "react-numeric-input": "^2.2.3",
+    "reactcss": "^1.2.3",
     "tailwindcss": "3.3.2"
   },
   "devDependencies": {

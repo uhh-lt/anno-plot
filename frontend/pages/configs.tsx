@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getConfigs, updateConfig, getProjects } from "@/pages/api/api";
+import { getConfigs, updateConfig, getProjects } from "@/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import EditModal from "@/components/config/EditConfigModal";

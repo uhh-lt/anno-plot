@@ -1,19 +1,21 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import { Button } from "@mui/material";
 import UploadModal from "@/components/UploadModal";
 import LoadingModal from "@/components/LoadingModal";
-import { uploadTestDataset } from "@/pages/api/api";
+import {postProject, uploadTestDataset} from "@/api/api";
 import Header from "@/components/Header";
+import {AppContext} from "@/context/AppContext";
 
 /**
  *  Index page, from here a project with a dataset can be uploaded or a test project can be used
  */
 export default function WelcomePage() {
+  const {setCurrentProject, fetchProjects} = useContext(AppContext);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   return (
-    <header>
+    <div>
       <Header title="" />
 
       <div className="content-center">
@@ -30,14 +32,17 @@ export default function WelcomePage() {
             variant="contained"
             component="label"
             className="my-5"
-            onClick={() => {
-              uploadTestDataset().then(() => window.location.reload());
+            onClick={async () => {
+              const project_response = await postProject("test");
+              await uploadTestDataset(project_response.data.data.project_id, "test");
+              await fetchProjects();
+              setCurrentProject(project_response.data.data.project_id);
             }}
           >
             Try it out
           </Button>
         </div>
       </div>
-    </header>
+    </div>
   );
 }

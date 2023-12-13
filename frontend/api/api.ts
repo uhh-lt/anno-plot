@@ -1,15 +1,12 @@
 import axios from "axios";
 
-import { CodeSegmentsResponse, ProjectStatsResponse, ClusterStatsResponse } from "@/pages/api/types";
 
-// Define the base URL of your FastAPI server
 const baseURL = "http://localhost:8000";
-const datasetName = "few_nerd";
 
 // Projects
 
 export const getProjects = (): Promise<any> => {
-  console.log(`${baseURL}/data/${datasetName}/projects/`);
+  console.log(`${baseURL}/projects/`);
   return axios.get<any>(`${baseURL}/projects/`);
 };
 
@@ -28,6 +25,21 @@ export const updateProjectName = (project_id: number, projectName: string): Prom
   console.log(project_id, "project_id");
   return axios.put(`${baseURL}/projects/${project_id}/?project_name=${projectName}`);
 };
+
+//Training
+
+//curl -X 'POST' \
+//   'http://localhost:8000/projects/1/dynamic/cluster?epochs=2' \
+//   -H 'accept: application/json' \
+//   -H 'Content-Type: application/json' \
+//   -d '[
+//   0
+// ]'
+
+export const trainDynamicCluster = (project_id: number, epochs: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/dynamic/cluster?epochs=${epochs}`);
+    return axios.post(`${baseURL}/projects/${project_id}/dynamic/cluster?epochs=${epochs}`);
+}
 
 // Configs
 
@@ -75,10 +87,6 @@ export const deleteDataset = (project_id: number, dataset_id: number): Promise<a
   return axios.delete(`${baseURL}/projects/${project_id}/datasets/${dataset_id}`);
 };
 
-export const uploadTestDataset = (): Promise<any> => {
-  console.log(`${baseURL}/data/${datasetName}/codes/roots`);
-  return axios.get<any>(`${baseURL}/projects/%7Bproject_id%7D/plots/test/`);
-};
 
 export const uploadDataset = (projectId: number, datasetName: string, file: File): Promise<any> => {
   const formData = new FormData();
@@ -162,20 +170,34 @@ export const getCodeRoute = (id: number, project_id: number): Promise<any> => {
   return axios.get<any>(`${baseURL}/projects/${project_id}/codes/${id}`);
 };
 
-export const updateCodeRoute = (
-  id: number,
-  codeName: string,
-  project_id: number,
-  topLevelCodeId: number | null,
-): Promise<any> => {
-  const body = {
-    code: codeName,
-    top_level_code_id: topLevelCodeId,
-  };
 
-  console.log(`${baseURL}/projects/${project_id}/codes/${id}`, body);
-  return axios.put<any>(`${baseURL}/projects/${project_id}/codes/${id}`, body);
+export const updateCode = (project_id, id, code_name, parent_id, color) => {
+  const params = new URLSearchParams();
+
+  if (code_name !== undefined && code_name !== null) {
+    params.append('code_name', code_name);
+  }
+
+  if (parent_id !== undefined && parent_id !== null) {
+    params.append('parent_id', parent_id);
+  }
+
+  if (color !== undefined && color !== null) {
+    params.append('color', color);
+  }
+
+  const url = `${baseURL}/projects/${project_id}/codes/${id}?${params.toString()}`;
+  console.log(url);
+  return axios.put(url, {}, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
 };
+
+
+
+
 
 export const addCodeToParent = (id: number, projectId: number, topLevelCodeId: number): Promise<any> => {
   return axios.put<any>(`${baseURL}/projects/${projectId}/codes/%7Bid%7D?code_id=${id}&parent_id=${topLevelCodeId}`);
@@ -200,7 +222,7 @@ export const renameCode = (
   }
 };
 
-export const deleteCodeRoute = (id: number, project_id: number): Promise<any> => {
+export const deleteCodeRoute = (project_id: number, id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/codes/${id}`);
   return axios.delete(`${baseURL}/projects/${project_id}/codes/${id}`);
 };
@@ -365,6 +387,18 @@ export const searchCluster = (project_id: number, search_cluster_id: number, lim
     `${baseURL}/projects/${project_id}/plots/cluster/?search_cluster_id=${search_cluster_id}&limit=${limit}`,
   );
 };
+/*
+curl -X 'GET' \
+  'http://localhost:8000/projects/1/clusters/errors?max_count=20&cutoff=0.7' \
+  -H 'accept: application/json'
+*/
+
+export const getClusterErrors = (project_id: number, max_count: number, cutoff: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/clusters/errors?max_count=${max_count}&cutoff=${cutoff}`);
+    return axios.get<any>(
+        `${baseURL}/projects/${project_id}/clusters/errors?max_count=${max_count}&cutoff=${cutoff}`,
+    );
+}
 
 // search segment
 /*
@@ -408,23 +442,29 @@ export const exportToFiles = (project_id: number): Promise<any> => {
 };
 
 // stats
-export const getProjectStats = (project_id: number): Promise<ProjectStatsResponse> => {
+export const getProjectStats = (project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/plots/stats/project/`);
   return axios
-    .get<ProjectStatsResponse>(`${baseURL}/projects/${project_id}/plots/stats/project/`)
+    .get<any>(`${baseURL}/projects/${project_id}/plots/stats/project/`)
     .then((response) => response.data);
 };
 
-export const getCodeStats = (project_id: number): Promise<CodeSegmentsResponse> => {
+export const getCodeStats = (project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/plots/stats/code/`);
   return axios
-    .get<CodeSegmentsResponse>(`${baseURL}/projects/${project_id}/plots/stats/code/`)
+    .get<any>(`${baseURL}/projects/${project_id}/plots/stats/code/`)
     .then((response) => response.data);
 };
 
-export const getClusterStats = (project_id: number): Promise<ClusterStatsResponse> => {
+export const getClusterStats = (project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/plots/stats/cluster/`);
   return axios
-    .get<ClusterStatsResponse>(`${baseURL}/projects/${project_id}/plots/stats/cluster/`)
+    .get<any>(`${baseURL}/projects/${project_id}/plots/stats/cluster/`)
     .then((response) => response.data);
 };
+
+
+export const uploadTestDataset = (project_id: number, dataset_name: string): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/datasets/test?dataset_name=${dataset_name}`);
+    return axios.post(`${baseURL}/projects/${project_id}/datasets/test?dataset_name=${dataset_name}`);
+}

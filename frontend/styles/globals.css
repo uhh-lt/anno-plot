@@ -132,3 +132,29 @@ tfoot th {
     overflow-y: auto;
     max-height: calc(100vh - 60px);
   }
+
+
+  d3fc-canvas>canvas, d3fc-svg>svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+  .annotation {
+    position: absolute;
+    padding: 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+  d3fc-group {
+  grid-template-columns: 1em auto 1fr 1em 0;
+  grid-template-rows: 0 auto 1fr 1em 0;
+}
+
+.tick text {
+  display: none;
+}

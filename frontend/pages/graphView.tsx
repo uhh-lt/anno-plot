@@ -1,12 +1,12 @@
 import React, { useRef, useEffect, useState } from "react";
-import data from "../src/NER_Tags.json";
-import { getCodeTree } from "@/pages/api/api";
+//import data from "../src/NER_Tags.json";
+import { getCodeTree } from "@/api/api";
 import { Button } from "@mui/material";
 import Header from "@/components/Header";
 import CodeTreeView from "@/components/CodeTreeView";
 import LoadingModal from "@/components/LoadingModal";
 import { useRouter } from "next/router";
-import { getConfig, updateConfig, recalculateEntries } from "@/pages/api/api";
+import { getConfig, updateConfig, recalculateEntries } from "@/api/api";
 import EditModal from "@/components/config/EditConfigModal";
 import DotPlotComp, { DotPlotCompHandles } from "@/components/DotPlotComp";
 
@@ -18,7 +18,7 @@ const DotPlotComponent: React.FC<any> = () => {
   // From CodeView component
   const router = useRouter();
   const contextMenuRef = useRef<HTMLDivElement>(null);
-  const [jsonData, setJsonData] = useState(data);
+  const [jsonData, setJsonData] = useState([]);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
   );
@@ -140,6 +140,7 @@ const DotPlotComponent: React.FC<any> = () => {
   return (
     <div>
       <Header title="Plot View" />
+      <LoadingModal open={loading} />
       <EditModal
         open={editModalOpen}
         handleClose={() => setEditModalOpen(false)}
@@ -148,7 +149,6 @@ const DotPlotComponent: React.FC<any> = () => {
         key={editData?.config_id}
         setLoading={() => setLoading(!loading)}
       />
-      <LoadingModal open={loading} />
       <div className="flex">
         <div className="float-left">
           <CodeTreeView
@@ -162,6 +162,7 @@ const DotPlotComponent: React.FC<any> = () => {
           projectId={projectId}
           source="http://localhost:8000/"
           is_dynamic={config ? config.config.model_type === "dynamic" : undefined}
+            setLoading={setLoading}
         />
       </div>
       <div className="absolute right-5 bottom-5 ">

@@ -114,6 +114,7 @@ class Code(Base):
     code_id = Column(Integer, primary_key=True)
     parent_code_id = Column(Integer, ForeignKey("Code.code_id", ondelete="CASCADE"))
     project_id = Column(Integer, ForeignKey("Project.project_id", ondelete="CASCADE"))
+    color = Column(String(255), nullable=False)
 
     text = Column(Text, nullable=False)
 
