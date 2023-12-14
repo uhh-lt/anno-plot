@@ -38,15 +38,15 @@ export const DotPlotWebGL = ({ handleHover, handleRightClick}) => {
             return;
         }
 
-        const d3_data = codeAveragePositions.filter(item => filteredCodes.includes(item.code_id)).map(item => ({
+        const d3_data = codeAveragePositions.filter(item => filteredCodes.includes(item.code_id) && item.segment_count>0).map(item => ({
         code_id: item.code_id,
             text: item.text,
         x: item.average_position.x,
         y: item.average_position.y,
-        r: item.segment_count,
+        r: item.segment_count * 5,
     }));
-        d3Manager.ownFunctionZoomColor(d3_data, codes);
 
+            d3Manager.ownFunctionZoomColor(d3_data, codes);
         // Update the plot when data or other dependencies change
         return () => {
             // Cleanup if necessary, e.g., removing event listeners

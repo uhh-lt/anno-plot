@@ -158,3 +158,9 @@ tfoot th {
 .tick text {
   display: none;
 }
+.label rect {
+  fill: ghostwhite;
+}
+.label circle {
+  display: none;
+}

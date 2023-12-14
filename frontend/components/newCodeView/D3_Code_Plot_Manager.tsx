@@ -33,8 +33,11 @@ export class D3_Code_Plot_Manager {
 
     private ownFunctionZoomColor = (data, categories) => {
 
+
+
         const containerElement = document.getElementById('chart');
         containerElement.innerHTML = '';
+
 
         const width = containerElement.clientWidth;
         const height = containerElement?.clientHeight;
@@ -60,10 +63,10 @@ export class D3_Code_Plot_Manager {
             idToColorMapper[item.code_id] = item.color;
         });
 
-        const categoryFill = d => webglColor(idToColorMapper[d.code_id]);
+        const categoryFill = d => idToColorMapper[d.code_id];
 
         const pointSeries = fc.seriesSvgPoint()
-            .crossValue(d => {console.log(d); return d.x})
+            .crossValue(d => d.x)
             .mainValue(d => d.y)
             .size(d=>d.r)
             .decorate(sel => {
@@ -72,9 +75,10 @@ export class D3_Code_Plot_Manager {
 
 
         const textLabel = fc
-        .layoutTextLabel()
-        .padding(2)
-        .value(d => d.text);
+    .layoutTextLabel()
+    .padding(2)
+    .value(d => d.text);
+
 
         const strategy = fc.layoutRemoveOverlaps(fc.layoutGreedy());
 
@@ -104,6 +108,12 @@ export class D3_Code_Plot_Manager {
         .seriesSvgMulti()
         .series([pointSeries, labels]);
 
+        if (data.length === 0) {
+            //just plot the axes
+            const xAxis = d3.axisBottom(xScale);
+            const yAxis = d3.axisRight(yScale);
+            return;
+        }
 
         const chart = fc
             .chartCartesian(xScale, yScale)
@@ -115,9 +125,9 @@ export class D3_Code_Plot_Manager {
                     .call(zoom)
             );
         const redraw = () => {
-            d3.select("#chart")
-                .datum({data})
-                .call(chart);
+                d3.select("#chart")
+                    .datum(data)
+                    .call(chart);
         }
         redraw();
         if (this.zoomTransform !== null) {
