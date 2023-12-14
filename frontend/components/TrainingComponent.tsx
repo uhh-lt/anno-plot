@@ -19,7 +19,7 @@ const TrainingComponent = () => {
       await trainClusters();
       index--;
     }
-    // Example: trainCodesHandler();
+    setIsTrainingCodes(false);
   };
 
   const handleTrainArrows = () => {
@@ -32,16 +32,15 @@ const TrainingComponent = () => {
     <div style={{ width: "300px" }}>
       <div>
         <ScrollableList style={{ width: "300px" }}/>
-        <Button
+        <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }}
           variant="contained"
           color="primary"
           onClick={handleTrainCodes}
         >
           {isTrainingCodes ? "Stop" : "Train Codes"}
         </Button>
-        <Button
+        <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }}
           variant="contained"
-          color="secondary"
           onClick={handleTrainArrows}
           disabled={isTrainingArrows}
         >

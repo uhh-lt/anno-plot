@@ -1,6 +1,7 @@
-import React, {useContext, useEffect, useState} from 'react';
-import NumericInput from 'react-numeric-input';
-import {AppContext} from "@/context/AppContext";
+import React, { useContext, useEffect, useState } from 'react';
+import { AppContext } from "@/context/AppContext";
+import { Box, Grid, Button, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+
 const ConfigEditor = ({ onSave }) => {
   const {config, loading,  localSetConfig} = useContext(AppContext);
   const [inputConfig, setConfig] = useState(config);
@@ -14,8 +15,6 @@ const ConfigEditor = ({ onSave }) => {
             newConfig.reduction_config.args.random_state = 42;
             newConfig.reduction_config.args.n_jobs = 1;
         }
-        console.log("newConfig");
-        console.log(newConfig);
         setConfig(newConfig);
     }, [loading, config]);
   const handleInputChange = (model, key, value) => {
@@ -46,147 +45,178 @@ const ConfigEditor = ({ onSave }) => {
   if (loading || !config || !inputConfig) {
     return <div>Loading...</div>;
   }
+    const reduction_configInputs = inputConfig.model_type === "static" ? (
+  <Box>
 
-const reduction_configInputs = inputConfig.model_type === "static" ? (
-  <div>
     {Object.entries(inputConfig?.reduction_config?.args).map(([key, value]) => {
-      // Skip n_jobs and random_state
       if (key === 'n_jobs' || key === 'random_state') return null;
-
       return (
-        <div key={key}>
-          <label>{key}: </label>
+        <FormControl key={key} fullWidth margin="normal">
+            <InputLabel>{key === "metric" ? key : ""}</InputLabel>
+
           {key === 'metric' ? (
-            <select
+            <Select
+                id = "metric"
               value={value}
               onChange={e => handleInputChange('reduction_config', key, e.target.value)}
+              label={key}
             >
-              <option value="cosine">cosine</option>
-              <option value="euclidean">euclidean</option>
-              <option value="manhattan">manhattan</option>
-              <option value="chebyshev">chebyshev</option>
-              <option value="minkowski">minkowski</option>
-              <option value="canberra">canberra</option>
-              <option value="braycurtis">braycurtis</option>
-              <option value="haversine">haversine</option>
-              <option value="mahalanobis">mahalanobis</option>
-              <option value="wminkowski">wminkowski</option>
-              <option value="seuclidean">seuclidean</option>
-              <option value="correlation">correlation</option>
-              <option value="hamming">hamming</option>
-              <option value="jaccard">jaccard</option>
-              <option value="dice">dice</option>
-              <option value="russellrao">russellrao</option>
-              <option value="kulsinski">kulsinski</option>
-              <option value="rogerstanimoto">rogerstanimoto</option>
-              <option value="sokalmichener">sokalmichener</option>
-              <option value="sokalsneath">sokalsneath</option>
-              <option value="yule">yule</option>
-            </select>
+              <MenuItem value="cosine">cosine</MenuItem>
+              <MenuItem value="euclidean">euclidean</MenuItem>
+                <MenuItem value="manhattan">manhattan</MenuItem>
+                <MenuItem value="chebyshev">chebyshev</MenuItem>
+                <MenuItem value="minkowski">minkowski</MenuItem>
+                <MenuItem value="canberra">canberra</MenuItem>
+                <MenuItem value="braycurtis">braycurtis</MenuItem>
+                <MenuItem value="haversine">haversine</MenuItem>
+                <MenuItem value="mahalanobis">mahalanobis</MenuItem>
+                <MenuItem value="wminkowski">wminkowski</MenuItem>
+                <MenuItem value="seuclidean">seuclidean</MenuItem>
+                <MenuItem value="correlation">correlation</MenuItem>
+                <MenuItem value="hamming">hamming</MenuItem>
+                <MenuItem value="jaccard">jaccard</MenuItem>
+                <MenuItem value="dice">dice</MenuItem>
+                <MenuItem value="russellrao">russellrao</MenuItem>
+                <MenuItem value="kulsinski">kulsinski</MenuItem>
+                <MenuItem value="rogerstanimoto">rogerstanimoto</MenuItem>
+                <MenuItem value="sokalmichener">sokalmichener</MenuItem>
+                <MenuItem value="sokalsneath">sokalsneath</MenuItem>
+                <MenuItem value="yule">yule</MenuItem>
+            </Select>
           ) : (
-            <NumericInput
-              value={value}
-              onChange={value => handleInputChange('reduction_config', key, value)}
-            />
+              // console log the key and value values: inside the html
+              <TextField
+              id = "not_metric"
+              type="number"
+              label={key}
+            value={value}
+            onChange={e => handleInputChange('reduction_config', key, Number(e.target.value))}
+            variant="outlined"
+            fullWidth
+        />
           )}
-        </div>
+        </FormControl>
       );
     })}
-  </div>
+  </Box>
 ) : (
-  <div>
-    <label>n_neighbors: </label>
-    <NumericInput
-      value={inputConfig?.reduction_config?.args.n_neighbors}
-      onChange={value => handleInputChange('reduction_config', 'n_neighbors', value)}
-    />
-  </div>
+  <Box>
+    <FormControl fullWidth margin="normal">
+        <TextField
+              type="number"
+              label="n_neighbors"
+              value={inputConfig?.reduction_config?.args.n_neighbors}
+              onChange={e => handleInputChange('reduction_config', "n_neighbors", Number(e.target.value))}
+              fullWidth
+            />
+    </FormControl>
+  </Box>
 );
 
-  return (
-    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-      <div>
+return (
+  <Box sx={{ flexGrow: 1 }}>
+    <Grid container spacing={2}>
+
+      {/* Embedding Model Config */}
+      <Grid item xs={12} md={4}>
         <h3>Embedding Model Config</h3>
         {Object.entries(inputConfig?.embedding_config?.args).map(([key, value]) => (
-          <div key={key}>
-            <label>{key}: </label>
-            <input
-              type="text"
-              value={value}
-              onChange={e => handleInputChange('embedding_config', key, e.target.value)}
-            />
-          </div>
+          <TextField
+            key={key}
+            label={key}
+            type="text"
+            value={value}
+            onChange={e => handleInputChange('embedding_config', key, e.target.value)}
+            variant="outlined"
+            fullWidth
+            margin="normal"
+          />
         ))}
-      </div>
-      <div>
+      </Grid>
+
+      {/* Cluster Model Config */}
+      <Grid item xs={12} md={3}>
         <h3>Cluster Model Config</h3>
         {Object.entries(inputConfig.cluster_config.args).map(([key, value]) => (
-  <div key={key}>
-    <label>{key}: </label>
-    {key === 'metric' ? (
-      <select
-        value={value}
-        onChange={e => handleInputChange('cluster_config', key, e.target.value)}
-      >
-        <option value="euclidean">euclidean</option>
-        <option value="braycurtis">braycurtis</option>
-        <option value="canberra">canberra</option>
-        <option value="chebyshev">chebyshev</option>
-        <option value="cityblock">cityblock</option>
-        <option value="dice">dice</option>
-        <option value="hamming">hamming</option>
-        <option value="haversine">haversine</option>
-        <option value="infinity">infinity</option>
-        <option value="jaccard">jaccard</option>
-        <option value="kulsinski">kulsinski</option>
-        <option value="l1">l1</option>
-        <option value="l2">l2</option>
-        <option value="mahalanobis">mahalanobis</option>
-        <option value="manhattan">manhattan</option>
-        <option value="matching">matching</option>
-        <option value="minkowski">minkowski</option>
-        <option value="p">p</option>
-        <option value="pyfunc">pyfunc</option>
-        <option value="rogerstanimoto">rogerstanimoto</option>
-        <option value="russellrao">russellrao</option>
-        <option value="seuclidean">seuclidean</option>
-        <option value="sokalmichener">sokalmichener</option>
-        <option value="sokalsneath">sokalsneath</option>
-        <option value="wminkowski">wminkowski</option>
-      </select>
-    ) : key === 'cluster_selection_method' ? (
-      <select
-        value={value}
-        onChange={e => handleInputChange('cluster_config', key, e.target.value)}
-      >
-        <option value="eom">eom</option>
-        <option value="leaf">leaf</option>
-      </select>
+          <FormControl key={key} fullWidth margin="normal">
+              <InputLabel>{key === "metric"|| key==="cluster_selection_method" ? key : ""}</InputLabel>
+            {key === 'metric' ? (
+              <Select
+                label={key}
+                value={value}
+                onChange={e => handleInputChange('cluster_config', key, e.target.value)}
+              >
+                  <MenuItem value="euclidean">euclidean</MenuItem>
+                    <MenuItem value="braycurtis">braycurtis</MenuItem>
+                    <MenuItem value="canberra">canberra</MenuItem>
+                    <MenuItem value="chebyshev">chebyshev</MenuItem>
+                    <MenuItem value="cityblock">cityblock</MenuItem>
+                    <MenuItem value="dice">dice</MenuItem>
+                    <MenuItem value="hamming">hamming</MenuItem>
+                    <MenuItem value="haversine">haversine</MenuItem>
+                    <MenuItem value="infinity">infinity</MenuItem>
+                    <MenuItem value="jaccard">jaccard</MenuItem>
+                    <MenuItem value="kulsinski">kulsinski</MenuItem>
+                    <MenuItem value="l1">l1</MenuItem>
+                    <MenuItem value="l2">l2</MenuItem>
+                    <MenuItem value="mahalanobis">mahalanobis</MenuItem>
+                    <MenuItem value="manhattan">manhattan</MenuItem>
+                    <MenuItem value="matching">matching</MenuItem>
+                    <MenuItem value="minkowski">minkowski</MenuItem>
+                    <MenuItem value="p">p</MenuItem>
+                    <MenuItem value="pyfunc">pyfunc</MenuItem>
+                    <MenuItem value="rogerstanimoto">rogerstanimoto</MenuItem>
+                    <MenuItem value="russellrao">russellrao</MenuItem>
+                    <MenuItem value="seuclidean">seuclidean</MenuItem>
+                    <MenuItem value="sokalmichener">sokalmichener</MenuItem>
+                    <MenuItem value="sokalsneath">sokalsneath</MenuItem>
+                    <MenuItem value="wminkowski">wminkowski</MenuItem>
+              </Select>
+            )  : key === 'cluster_selection_method' ? (
+      <Select
+                label={key}
+                value={value }
+                onChange={e => handleInputChange('cluster_config', key, e.target.value)}
+              >
+        <MenuItem value="eom">eom</MenuItem>
+        <MenuItem value="leaf">leaf</MenuItem>
+      </Select>
     ) : (
-      <NumericInput
-        value={value}
-        onChange={value => handleInputChange('cluster_config', key, value)}
-      />
-    )}
-  </div>
-))}
+            <TextField
+              type="number"
+              label={key}
+              value={value}
+              onChange={e => handleInputChange('cluster_config', key, Number(e.target.value))}
+              //variant="outlined"
+              fullWidth
+            />
+            )}
+          </FormControl>
+        ))}
+      </Grid>
 
-      </div>
-      <div>
+      {/* Reduction Model Config */}
+      <Grid item xs={12} md={3}>
         <h3>Reduction Model Config</h3>
         {reduction_configInputs}
-        <button onClick={toggleModelType}>
+        <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }} variant="contained" onClick={toggleModelType}>
           Switch to {inputConfig.model_type === "static" ? "dynamic" : "static"}
-        </button>
-      </div>
+        </Button>
+      </Grid>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <button onClick={handleSave}>Save Config</button>
-        <button onClick={handleSave}>Show Clusters</button>
-        <button onClick={handleSave}>Show Errors</button>
-      </div>
-    </div>
-  );
+      {/* Buttons at the bottom */}
+      <Grid item xs={12} md={2}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }} variant="contained" onClick={handleSave}>Save Config</Button>
+          <Button type="bu"  sx={{ backgroundColor: '#1E3A8A', color: 'white' }} variant="contained" onClick={handleSave}>Show Clusters</Button>
+          <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }} variant="contained" onClick={handleSave}>Show Errors</Button>
+        </Box>
+      </Grid>
+
+    </Grid>
+  </Box>
+);
+
 };
 
 export default ConfigEditor;

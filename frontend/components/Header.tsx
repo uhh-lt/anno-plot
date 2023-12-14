@@ -118,7 +118,7 @@ export default function Header(props) {
               <Button
                 variant="outlined"
                 component="label"
-                onClick={() => router.push(`/codeView`)}
+                onClick={() => router.push(`/newCodePlotPage`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Codes</span>

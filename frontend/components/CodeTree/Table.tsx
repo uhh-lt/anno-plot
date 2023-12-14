@@ -1,7 +1,7 @@
 import {useState, useContext, useEffect} from "react";
 import {TreeView, TreeItem} from '@mui/x-tree-view';
 import {ExpandMore, ChevronRight} from "@mui/icons-material";
-import {Checkbox, TextField} from "@mui/material";
+import {Button, Checkbox, TextField} from "@mui/material";
 import {AppContext} from '@/context/AppContext'; // Import your context
 import ColorPicker from "./ColorPicker.tsx";
 import ContextMenu from "./ContextMenu.tsx";
@@ -252,8 +252,8 @@ if (isLoading) {
                 </TreeView>
             </div>
             <div className="button-div">
-                <button onClick={selectAllCategories}>Select All</button>
-                <button onClick={clearAllCategories}>Clear All</button>
+                <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }} onClick={selectAllCategories}>Select All</Button>
+                <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }} onClick={clearAllCategories}>Clear All</Button>
             </div>
         </div>
     );

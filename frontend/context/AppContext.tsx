@@ -33,6 +33,7 @@ const defaultData = {
     config: {},
     localSetConfig: (value: any) => {},
     trainClusters: async () => {},
+    codeAveragePositions: [],
 };
 
 export const AppContext = createContext(defaultData);
@@ -177,6 +178,7 @@ export const AppProvider = ({ children }) => {
         localSetConfig,
         trainClusters,
         setLoading,
+        codeAveragePositions,
     };
 
     return (
