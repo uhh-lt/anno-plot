@@ -164,3 +164,7 @@ tfoot th {
 .label circle {
   display: none;
 }
+.MuiTreeItem-root[aria-selected="true"] {
+    /* Your desired styles go here */
+    background-color: lightblue; /* Replace #yourColor with the color you want */
+}

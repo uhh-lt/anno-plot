@@ -61,7 +61,7 @@ const HeaderStyle = {
     }
   }
 return (
-  <div style={{ overflowY: 'auto', maxHeight: '1000px' }}>
+  <div style={{ overflowY: 'auto', maxHeight: '800px' }}>
     <div style={HeaderStyle}>
       {"Arrows:"}
     </div>

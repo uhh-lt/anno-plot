@@ -64,13 +64,16 @@ export class D3_Code_Plot_Manager {
         });
 
         const categoryFill = d => idToColorMapper[d.code_id];
-
+        let right_click_function = this.handle_right_click;
         const pointSeries = fc.seriesSvgPoint()
             .crossValue(d => d.x)
             .mainValue(d => d.y)
             .size(d=>d.r)
             .decorate(sel => {
-                sel.enter().attr('fill', d => categoryFill(d));
+                sel.enter().attr('fill', d => categoryFill(d))
+                .on("contextmenu", function(event, d) {
+           event.preventDefault();
+           right_click_function(event, d3.select(this).datum());});
             });
 
 
@@ -108,22 +111,42 @@ export class D3_Code_Plot_Manager {
         .seriesSvgMulti()
         .series([pointSeries, labels]);
 
-        if (data.length === 0) {
-            //just plot the axes
-            const xAxis = d3.axisBottom(xScale);
-            const yAxis = d3.axisRight(yScale);
-            return;
-        }
-
-        const chart = fc
+        let chart = fc
             .chartCartesian(xScale, yScale)
-            .svgPlotArea(multiSeries)
+            .svgPlotArea(pointSeries)
             .decorate(sel =>
                 sel
                     .enter()
                     .select("d3fc-svg.plot-area")
                     .call(zoom)
             );
+        if (data.length > 0) {
+
+            chart = fc
+            .chartCartesian(xScale, yScale)
+            .svgPlotArea(multiSeries)
+            .decorate(sel =>
+                sel
+                    .enter()
+                    .select("d3fc-svg.plot-area")
+                    .on("measure.range", (event) => {
+                        //this.handle_hover({}, -1);
+                        xScaleOriginal.range([0, event.detail.width]);
+                        yScaleOriginal.range([event.detail.height, 0]);
+                        xScaleOriginal.domain([0, event.detail.width]);
+                        yScaleOriginal.domain([event.detail.height, 0]);
+                        if (event.detail.resized) {
+                            if (this.zoomTransform !== null) {
+                                d3.select("d3fc-svg.plot-area")
+                                    .call(zoom.transform, this.zoomTransform);
+                            }
+                        }
+                        redraw();
+                    })
+                    .call(zoom)
+
+            );
+        }
         const redraw = () => {
                 d3.select("#chart")
                     .datum(data)

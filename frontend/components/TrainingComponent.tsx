@@ -31,7 +31,7 @@ const TrainingComponent = () => {
     return (
     <div style={{ width: "300px" }}>
       <div>
-        <ScrollableList style={{ width: "300px" }}/>
+        <ScrollableList style={{ width: "300px", height: "800px" }}/>
         <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }}
           variant="contained"
           color="primary"

@@ -8,6 +8,9 @@ import ContextMenu from "./ContextMenu.tsx";
 import {hexToReactColor, reactColorToHex} from "@/utilities";
 import {updateCode} from "@/api/api";
 import zIndex from "@mui/material/styles/zIndex";
+// When using TypeScript 4.x and above
+import type {} from '@mui/x-tree-view/themeAugmentation';
+// When using TypeScript 3.x and below
 
 const Table = () => {
     const {
@@ -199,6 +202,8 @@ const handleContextMenu = (event, nodeId) => {
             <TreeItem
                 key={node.code_id}
                 nodeId={node.code_id.toString()}
+                //make is so that aria selected color is red
+                sx = {{'&.Mui-selected': {backgroundColor: '#1E3A8A', color: 'white'}}}
                 label={
 <div onContextMenu={(event) => handleContextMenu(event, node.code_id)}>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
@@ -240,7 +245,7 @@ if (isLoading) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div>
+            <div >
                 <ContextMenu key={contextMenu.key} event={contextMenu.event} nodeId={contextMenu.nodeId} selected={contextMenu.selected}/>
                 <TreeView
                     defaultCollapseIcon={<ExpandMore/>}
@@ -249,6 +254,7 @@ if (isLoading) {
                     selected={selectedNodes}
                     multiSelect>
                     {Object.values(searchCategories).map(code => renderTree(code))}
+
                 </TreeView>
             </div>
             <div className="button-div">
