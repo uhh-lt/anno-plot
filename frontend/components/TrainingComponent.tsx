@@ -9,7 +9,7 @@ import {Button} from "@mui/material";
 const TrainingComponent = () => {
   const [isTrainingCodes, setIsTrainingCodes] = useState(false);
   const [isTrainingArrows, setIsTrainingArrows] = useState(false);
-  const {trainClusters} = useContext(AppContext);
+  const {trainClusters, trainArrows} = useContext(AppContext);
 
   const handleTrainCodes = async () => {
     // Logic to start/stop training codes
@@ -22,10 +22,10 @@ const TrainingComponent = () => {
     setIsTrainingCodes(false);
   };
 
-  const handleTrainArrows = () => {
-    // Logic to start training arrows
+  const handleTrainArrows = async () => {
     setIsTrainingArrows(true);
-    // Example: trainArrowsHandler();
+    await trainArrows();
+    setIsTrainingArrows(false);
   };
 
     return (

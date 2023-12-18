@@ -6,7 +6,7 @@ import {
     getClusterErrors,
     getCodeTree,
     getCodeStats,
-    getConfig, updateConfig, trainDynamicCluster
+    getConfig, updateConfig, trainDynamicCluster, trainDynamicCorrection
 } from '../api/api.ts';
 
 const defaultData = {
@@ -34,6 +34,7 @@ const defaultData = {
     localSetConfig: (value: any) => {},
     trainClusters: async () => {},
     codeAveragePositions: [],
+    trainArrows: async () => {},
 };
 
 export const AppContext = createContext(defaultData);
@@ -85,6 +86,21 @@ export const AppProvider = ({ children }) => {
         const train_response = await trainDynamicCluster(currentProject, 3);
         await fetchProject();
     }
+
+    const trainArrows = async () => {
+        console.log("Training Arrows");
+        const arrow_list = [];
+        for (const arrow of arrows) {
+            const new_arrow = {
+                "id": arrow.dot_id,
+                "pos": [arrow.end.x, arrow.end.y]
+            }
+            arrow_list.push(new_arrow);
+        }
+        console.log(arrow_list);
+        const train_response = await trainDynamicCorrection(currentProject, 3, arrow_list);
+        await fetchProject();
+    }
     const fetchProjects = async () => {
         console.log("Fetching Projects");
         setLoading(true)
@@ -131,6 +147,21 @@ export const AppProvider = ({ children }) => {
             console.log("Fetching Data");
             const data_response = await getPlots(currentProject, true, 0, 0);
             setData(data_response.data.data);
+            // update arrow start position if its dot changed position
+            // create mapper for the arrows which maps dot_id to arrow
+            const arrow_mapper = {};
+            for (const arrow of arrows) {
+                arrow_mapper[arrow.dot_id] = arrow;
+            }
+            for (const data_point of data_response.data.data) {
+                if(data_point.id in arrow_mapper) {
+                    const arrow = arrow_mapper[data_point.id];
+                    arrow.start.x = data_point.reduced_embedding.x;
+                    arrow.start.y = data_point.reduced_embedding.y;
+                }
+            }
+            const new_arrows = [...arrows];
+            setArrows(new_arrows);
         }
     }
 
@@ -179,6 +210,7 @@ export const AppProvider = ({ children }) => {
         trainClusters,
         setLoading,
         codeAveragePositions,
+        trainArrows,
     };
 
     return (

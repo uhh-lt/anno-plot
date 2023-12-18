@@ -28,17 +28,20 @@ export const updateProjectName = (project_id: number, projectName: string): Prom
 
 //Training
 
-//curl -X 'POST' \
-//   'http://localhost:8000/projects/1/dynamic/cluster?epochs=2' \
-//   -H 'accept: application/json' \
-//   -H 'Content-Type: application/json' \
-//   -d '[
-//   0
-// ]'
-
 export const trainDynamicCluster = (project_id: number, epochs: number): Promise<any> => {
     console.log(`${baseURL}/projects/${project_id}/dynamic/cluster?epochs=${epochs}`);
     return axios.post(`${baseURL}/projects/${project_id}/dynamic/cluster?epochs=${epochs}`);
+}
+
+export const trainDynamicCorrection = (project_id: number, epochs: number, corrections: any): Promise<any> => {
+    const jsonData = JSON.stringify(corrections);
+    return fetch(`${baseURL}/projects/${project_id}/dynamic/correction?epochs=${epochs}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonData,
+    })
 }
 
 // Configs
