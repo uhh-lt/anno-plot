@@ -41,14 +41,14 @@ const Annotation = ({ data, color }) => {
     const style = {
         left: mousePosition.x,
         top: mousePosition.y,
-        backgroundColor: hexToRGBA(codes.find(c => c.code_id === code).color, 0.5),
+        backgroundColor: hexToRGBA(codes.find(c => c.code_id === code).color, 0.7),
         maxWidth: '25%',
         wordWrap: 'break-word',
         position: 'absolute',
     };
 
     const textStyle = {
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         padding: '10px',
         borderRadius: '5px',
         color: 'white',

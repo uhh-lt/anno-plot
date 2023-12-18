@@ -35,6 +35,7 @@ async def train_for_clusters(
     with Timer("setup"):
         project = ProjectService(project_id, db=db)
         embedding_model = project.get_model_entry("embedding_config")
+        cluster_model = project.get_model_entry("cluster_config")
         extract_embeddings_endpoint(project_id, db=db)
         embeddings = (
             db.query(Embedding)
@@ -77,7 +78,7 @@ async def train_for_clusters(
         new_model = train_clusters(data, dyn_red_model, ids)
         dyn_red_model = new_model
     async with db_lock:
-        delete_old_reduced_embeddings(db, dyn_red_entry)
+        delete_old_reduced_embeddings(db, dyn_red_entry, cluster_model)
         extract_embeddings_reduced(project, dyn_red_model, db)
         db.commit()
 
@@ -100,6 +101,7 @@ def train_for_correction(
     with Timer("setup"):
         project = ProjectService(project_id, db=db)
         embedding_model = project.get_model_entry("embedding_config")
+        cluster_model = project.get_model_entry("cluster_config")
         extract_embeddings_endpoint(project_id, db=db)
         embeddings = (
             db.query(Embedding)
@@ -151,6 +153,6 @@ def train_for_correction(
         .filter(ReducedEmbedding.model_id == dyn_red_entry.model_id)
         .all()
     )
-    delete_old_reduced_embeddings(db, dyn_red_entry)
+    delete_old_reduced_embeddings(db, dyn_red_entry, cluster_model)
     extract_embeddings_reduced(project, dyn_red_model, db)
     return True

@@ -6,6 +6,7 @@ import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
+from sqlalchemy import text
 
 from db.models import Cluster, ReducedEmbedding
 from models.model_definitions import DynamicUmap
@@ -126,7 +127,6 @@ def custom_loss(output, target_dicts, original, lam=0.1):
     if selected_output.nelement() == 0 or target_pos_tensor.nelement() == 0:
         mse_loss_selected = torch.tensor(0.0, dtype=output.dtype).to(output.device)
     else:
-        # Calculate MSE loss for selected indices
         mse_loss_selected = mse_loss(selected_output, target_pos_tensor)
     # Create a mask to find indices that are NOT in the target list
     full_indices = torch.arange(output.size(0))
@@ -198,23 +198,24 @@ def train_points_epochs(data, epochs, dyn_red_model, correction):
     return dyn_red_model
 
 
-def delete_old_reduced_embeddings(db, dyn_red_entry):
+def delete_old_reduced_embeddings(db, dyn_red_entry, cluster_model):
     """ delete old reduced embeddings, for speedup, delete connected clusters manually"""
-    with Timer("delete old reduced embeddings"):
-        db.query(Cluster).filter(
-            Cluster.reduced_embedding_id.in_(
-                db.query(ReducedEmbedding.embedding_id).filter(
-                    ReducedEmbedding.model_id == dyn_red_entry.model_id
-                )
-            )
-        ).delete(synchronize_session=False)
-        db.query(ReducedEmbedding).filter(
-            ReducedEmbedding.model_id == dyn_red_entry.model_id
-        ).delete(synchronize_session=False)
-        db.commit()
+    with Timer("delete reduced embeddings"):
 
+        try:
+            with Timer("delete clusters"):
+                db.execute(text("DELETE FROM \"Cluster\" WHERE model_id = :model_id"), {"model_id": cluster_model.model_id})
+
+            with Timer("delete reduced embeddings"):
+                db.execute(text("DELETE FROM \"ReducedEmbedding\" WHERE model_id = :model_id"), {"model_id": dyn_red_entry.model_id})
+
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            raise e
 
 def extract_embeddings_reduced(project, dyn_red_model, db):
+    """ this function handles the model saving and re-calculation of reduced embeddings after training """
     """ this function handles the model saving and re-calculation of reduced embeddings after training """
     with Timer("add new reduced embeddings"):
         project.save_model("reduction_config", dyn_red_model)
