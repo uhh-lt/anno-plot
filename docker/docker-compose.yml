@@ -38,7 +38,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "${API_EXPOSED:-5500}:${API_PORT}"
+      - "${BACKEND_EXPOSED:-5500}:${API_PORT}"
     restart: always
     links:
       - postgres
