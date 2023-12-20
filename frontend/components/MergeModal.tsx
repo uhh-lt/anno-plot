@@ -1,6 +1,6 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getCodesRoutes, mergeCodes } from "@/pages/api/api";
+import { getCodesRoutes, mergeCodes } from "@/api/api";
 
 /**
  * This component displays a modal for merging multiple codes. Users can select codes to merge and provide a new code name.

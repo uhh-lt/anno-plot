@@ -133,7 +133,7 @@ def get_clusters_endpoint(
 @router.get("/errors")
 def get_error_endpoint(
     project_id: int,
-    max_count: int = 20,
+    max_count: int = 0,
     cutoff: float = 0.7,
     db: Session = Depends(get_db),
 ):
@@ -189,8 +189,11 @@ def get_error_endpoint(
         for row in plots
     ]
     pandas_df = pd.DataFrame(result_dicts)
-
+    if len(pandas_df) < 2:
+        return {"data": []}
     labels = pandas_df.groupby("cluster")["code"].value_counts()
+
+
 
     primary_codes = {}
     for cluster, code_counts in labels.groupby(level=0):
@@ -209,5 +212,6 @@ def get_error_endpoint(
                 (pandas_df["cluster"] == cluster) & (pandas_df["code"] != primary_code)
             ]["id"].tolist()
         )
-
-    return {"data": mismatched_ids[:max_count]}
+    if max_count > 0:
+        mismatched_ids = mismatched_ids[:max_count]
+    return {"data": mismatched_ids}

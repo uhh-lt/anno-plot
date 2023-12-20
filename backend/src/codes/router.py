@@ -13,6 +13,20 @@ from codes.schemas import MergeOperation
 from codes.service import build_category_tree, has_circular_dependency
 from db import models, session
 
+import random
+
+def generate_light_color():
+    """
+    Generate a random light color in hexadecimal format.
+    """
+    # Randomly generate RGB components with higher values for lighter color
+    r = random.randint(100, 255)
+    g = random.randint(100, 255)
+    b = random.randint(100, 255)
+
+    # Convert to hexadecimal
+    return f'#{r:02x}{g:02x}{b:02x}'
+
 router = APIRouter()
 
 # Route to get all codes for a specific project
@@ -101,7 +115,7 @@ def insert_code_route(
 ):
     try:
         new_code = models.Code(
-            parent_code_id=parent_id, project_id=project_id, text=code_name
+            parent_code_id=parent_id, project_id=project_id, text=code_name, color=generate_light_color()
         )
         db.add(new_code)
         db.commit()
@@ -115,34 +129,38 @@ def insert_code_route(
 @router.put("/{id}")
 def update_code_route(
     project_id: int,
-    code_id: int,
+    id: int,
     code_name: Optional[str] = None,
     parent_id: Optional[int] = None,
+    color: Optional[str] = None,
     db: Session = Depends(session.get_db),
 ):
     try:
         data = (
             db.query(models.Code)
-            .filter(models.Code.project_id == project_id, models.Code.code_id == code_id)
+            .filter(models.Code.project_id == project_id, models.Code.code_id == id)
             .first()
         )
         if data is None:
             raise HTTPException(status_code=404, detail="Code not found")
         if code_name:
             data.text = code_name
-        if parent_id:
-            if has_circular_dependency(db, project_id, code_id, parent_id):
-                codes_to_update = (
-                    db.query(models.Code)
-                    .filter(
-                        models.Code.project_id == project_id,
-                        models.Code.parent_code_id == code_id,
-                    )
-                    .all()
+        if color:
+            data.color = color
+        if parent_id and not has_circular_dependency(db, project_id, id, parent_id):
+            """codes_to_update = (
+                db.query(models.Code)
+                .filter(
+                    models.Code.project_id == project_id,
+                    models.Code.parent_code_id == id,
                 )
-                for code in codes_to_update:
-                    code.parent_code_id = None
+                .all()
+            )
+            for code in codes_to_update:
+                code.parent_code_id = None"""
             data.parent_code_id = parent_id
+            if parent_id == -1:
+                data.parent_code_id = None
         db.add(data)
         db.commit()
         db.refresh(data)

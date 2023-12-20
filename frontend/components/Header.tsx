@@ -1,11 +1,11 @@
 import { Menu } from "@mui/icons-material";
 import { Accordion, AccordionSummary, Drawer } from "@mui/material";
-import { useEffect, useState } from "react";
+import {useContext, useEffect, useState} from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useRouter } from "next/router";
 import { Button, ButtonGroup } from "@mui/material";
-import { getProjects } from "@/pages/api/api";
+import { getProjects } from "@/api/api";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
@@ -21,47 +21,19 @@ import DataArrayIcon from "@mui/icons-material/DataArray";
 import PlaceIcon from "@mui/icons-material/Place";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import SchemaIcon from "@mui/icons-material/Schema";
-
+import { AppContext } from "@/context/AppContext.tsx";
 /**
  * This component represents the header of the application, including the navigation menu, project selection, and various links to different views and statistics.
  */
 
-interface HeaderProps {
-  title: string;
-}
-
-interface Project {
-  project_id: number;
-  project_name: string;
-  config_id: number;
-}
-
-export default function Header(props: HeaderProps) {
+export default function Header(props) {
   const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [projectId, setProjectId] = useState(
-    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
-  );
+  const {projects, currentProject, setCurrentProject} = useContext(AppContext);
+
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
-
-  // Do api stuff here
-  useEffect(() => {
-    setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
-    const fetchProjects = async () => {
-      try {
-        const response = await getProjects(); // Replace with your API endpoint
-        const projectData = response.data.data; // Access the "data" property of the response
-        setProjects(projectData);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-
-    fetchProjects();
-  }, []);
 
   return (
     <header className="w-screen h-16 bg-blue-900 p-3 pl-5 mb-5 text-white flex items-center">
@@ -76,23 +48,21 @@ export default function Header(props: HeaderProps) {
       <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer}>
         <div className="p-4 w-64">
           <div className="mt-5">
-            <h2 className="text-2xl text-black">Project {projectId}</h2>
+            <h2 className="text-2xl text-black">Project {currentProject}</h2>
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <p className="w-fit mx-auto">
-                  {projects.find((project) => project.project_id == projectId)?.project_name}
+                  {projects.find((project) => project.project_id == currentProject)?.project_name}
                 </p>
               </AccordionSummary>
               {projects.map((project) => (
                 <div key={project.project_id} className="w-fit mx-auto my-1">
                   {project.project_name}
-                  {project.project_id != projectId && (
+                  {project.project_id != currentProject && (
                     <button
                       className="ml-1"
                       onClick={() => {
-                        localStorage.setItem("projectId", project.project_id.toString());
-                        localStorage.setItem("selectedNodes", JSON.stringify([]));
-                        window.location.reload(); // Reload the page
+                        setCurrentProject(project.project_id);
                       }}
                     >
                       <CompareArrowsIcon />
@@ -114,31 +84,25 @@ export default function Header(props: HeaderProps) {
             <Button
               variant="outlined"
               component="label"
-              onClick={() => router.push(`/projects`)}
+              onClick={() => {
+                console.log("routing to project");
+                router.push(`/projects`);}}
               style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
               <span>Projects</span>
               <BusinessCenterIcon />
             </Button>
             <Button
-              variant="outlined"
-              component="label"
-              onClick={() => router.push(`/configs`)}
-              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-            >
-              <span>Configs</span>
-              <BuildIcon />
-            </Button>
-            <Button
-              variant="outlined"
-              component="label"
-              onClick={() => router.push(`/databases`)}
-              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-            >
-              <span>Databases</span>
-              <StorageIcon />
-            </Button>
-          </ButtonGroup>
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/datasets`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Datasets</span>
+                <DatasetIcon />
+              </Button>
+            </ButtonGroup>
+
         </div>
 
         <div className="p-4 w-64">
@@ -154,7 +118,7 @@ export default function Header(props: HeaderProps) {
               <Button
                 variant="outlined"
                 component="label"
-                onClick={() => router.push(`/codeView`)}
+                onClick={() => router.push(`/newCodePlotPage`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Codes</span>
@@ -163,7 +127,7 @@ export default function Header(props: HeaderProps) {
               <Button
                 variant="outlined"
                 component="label"
-                onClick={() => router.push(`/graphView`)}
+                onClick={() => router.push(`/PlotViewWebGL`)}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>Graph</span>
@@ -178,15 +142,7 @@ export default function Header(props: HeaderProps) {
               aria-label="contained primary button group"
               style={{ display: "flex", flexDirection: "column" }}
             >
-              <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/datasets`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Datasets</span>
-                <DatasetIcon />
-              </Button>
+
               <Button
                 variant="outlined"
                 component="label"
@@ -269,6 +225,25 @@ export default function Header(props: HeaderProps) {
                 <DonutLargeIcon />
               </Button>
             </ButtonGroup>
+            <br />
+            <h1 className="text-xl text-black">Admin</h1>
+            <ButtonGroup
+              variant="contained"
+              color="primary"
+              aria-label="contained primary button group"
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              <Button
+              variant="outlined"
+              component="label"
+              onClick={() => router.push(`/databases`)}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span>Databases</span>
+              <StorageIcon />
+            </Button>
+          </ButtonGroup>
+
             <br />
           </div>
         </div>

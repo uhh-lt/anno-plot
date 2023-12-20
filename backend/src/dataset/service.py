@@ -3,11 +3,23 @@ import time
 
 from sqlalchemy import and_
 from sqlalchemy.dialects.postgresql import insert
-
+import random
 from db.models import Code, Dataset, Project, Segment, Sentence
 
 logger = logging.getLogger(__name__)
 
+
+def generate_light_color():
+    """
+    Generate a random light color in hexadecimal format.
+    """
+    # Randomly generate RGB components with higher values for lighter color
+    r = random.randint(100, 255)
+    g = random.randint(100, 255)
+    b = random.randint(100, 255)
+
+    # Convert to hexadecimal
+    return f'#{r:02x}{g:02x}{b:02x}'
 
 def text_to_json(input_text, options=None):
     # Split text by double newlines to separate sentences
@@ -146,6 +158,7 @@ def add_data_to_db(project_id, database_name, json_data, session):
                             text=label,
                             project_id=project.project_id,
                             parent_code_id=last_id,
+                            color=generate_light_color(),
                         )
                         session.add(new_code)
                         session.commit()

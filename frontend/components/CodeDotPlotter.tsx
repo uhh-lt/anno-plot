@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { ZoomBehavior, ZoomedElementBaseType } from "d3";
 import CodeDot from "@/components/CodeDot";
-import { getCodeStats } from "@/pages/api/api";
+import { getCodeStats } from "@/api/api";
 
 /**
  * This class is responsible for managing and rendering a plot of CodeDot instances (codes) within an SVG container. It includes
@@ -117,6 +117,7 @@ class CodeDotPlotter {
   private showCode: () => void;
   private tree: any;
   private color_mapper: any;
+  public set_loading: (boolean) => void;
 
   constructor(
     containerId: string,
@@ -130,7 +131,9 @@ class CodeDotPlotter {
     deleteCode: () => void,
     renameCode: () => void,
     showCode: () => void,
+    setLoading: (boolean) => void,
   ) {
+    this.set_loading = setLoading;
     this.containerId = containerId;
     this.source = source;
     this.projectId = projectId;
@@ -242,8 +245,10 @@ class CodeDotPlotter {
       console.log("already fetched data...");
       return Promise.resolve(this.fetched_data);
     } else {
+      this.set_loading(true)
       return getCodeStats(this.projectId)
         .then(async (codeStats: any) => {
+            this.set_loading(false)
           console.log("Received codeStats response:", codeStats);
           if (codeStats) {
             //console.log("Code Stats Codes:", codeStats.code_segments_count.codes);

@@ -127,7 +127,8 @@ class Dot {
   public dotId: number;
   public x: number;
   public y: number;
-  public segment: number;
+  public segment: string;
+  public start_position: number;
   public sentence: string;
   public code: number;
   public codeText: string;
@@ -145,6 +146,7 @@ class Dot {
     x,
     y,
     segment,
+    start_position,
     sentence,
     code,
     cluster_id,
@@ -156,6 +158,7 @@ class Dot {
     this.x = x;
     this.y = y;
     this.segment = segment;
+    this.start_position = start_position;
     this.sentence = sentence;
     this.cluster_id = cluster_id;
     this.cluster = false;
@@ -221,7 +224,7 @@ class Dot {
 
     if (this.cluster) {
       const scale = d3.zoomTransform(this.plot.svg.node()).k;
-      console.log("setting cluster color");
+      //console.log("setting cluster color");
       const colors = ["#00FF00", "#0000FF", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8800", "#FF0088", "#00FFF0"];
       const index = this.cluster_id % colors.length;
       this.circle.attr("stroke", colors[index]).attr("stroke-width", 2 / scale);
@@ -362,12 +365,12 @@ class Dot {
       .style("display", "block")
       .style("background-color", d3.color(this.color).copy({ opacity: 0.5 }).toString());
     this.tooltip
-      .append("div")
-      .text("Segment: " + this.segment)
-      .append("div")
-      .text("Category: " + findCodePath(this.plot.tree, this.code))
-      .append("div")
-      .text("Sentence: " + this.sentence);
+    .append("div")
+    .html("<strong>" + findCodePath(this.plot.tree, this.code) + "</strong>")
+    .append("div")
+    .html(this.sentence.substring(0, this.start_position) +
+          "<strong><em>" + this.segment + "</em></strong>" +
+          this.sentence.substring(this.start_position + this.segment.length));
   }
 
   hideTooltip() {
@@ -469,8 +472,8 @@ class Line {
     this.dot.plot.list_update_callback(this.dot.plot);
   }
   draw(plotter) {
-    console.log("Drawing line");
-    console.log("drawing line plotter", plotter);
+    //console.log("Drawing line");
+    //console.log("drawing line plotter", plotter);
     const creationZoomScale = d3.zoomTransform(this.dot.plot.svg.node()).k;
     this.element = plotter.container
       .append("line")
@@ -518,6 +521,7 @@ class Line {
 
 class DotPlot {
   public addToCode: () => void;
+  public set_loading: (boolean) => void;
   public setRightClickedId: (id: number) => void;
   public containerId: string;
   public is_dynamic: boolean;
@@ -551,8 +555,10 @@ class DotPlot {
     list_update_callback = null,
     addToCode: () => void,
     setRightClickedId: (id: number) => void,
+    setLoading: (boolean) => void,
   ) {
-    console.log("Initializing dot plotter...");
+    //console.log("Initializing dot plotter...");
+    this.set_loading = setLoading;
     this.containerId = containerId;
     this.is_dynamic = is_dynamic;
     this.train_button = train_button;
@@ -618,8 +624,8 @@ class DotPlot {
   setupTrainButton() {
     const trainButton = this.train_button.current;
     if (!trainButton) {
-      console.log("train button not found");
-      console.log("aborting...");
+      //console.log("train button not found");
+      //console.log("aborting...");
       return;
     }
     this.button_is_set = true;
@@ -699,12 +705,16 @@ class DotPlot {
     if (this.fetched_data) {
       return Promise.resolve(this.fetched_data);
     } else {
-      console.log("fetching data...");
+      //console.log("fetching data...");
+      console.log("set loading...")
+      this.set_loading(true);
       const endpoint = this.source + "projects/" + this.projectId + "/plots/?all=true";
       return fetch(endpoint)
         .then((response) => response.json())
         .then((data) => {
           this.fetched_data = data["data"];
+          console.log("release loading...")
+          this.set_loading(false);
           return data["data"];
         })
         .catch((error) => {
@@ -738,21 +748,21 @@ class DotPlot {
     // make the color of all dots in this.data [red, green, blue] depending on cluster id
     if (!this.cluster) {
       this.cluster = true;
-      console.log("making clusters...");
+      //console.log("making clusters...");
       for (const dot of this.data) {
         dot.makeCluster();
       }
     } else {
       this.cluster = false;
-      console.log("removing clusters...");
+      //console.log("removing clusters...");
       for (const dot of this.data) {
         dot.removeCluster();
       }
     }
-    console.log("done");
+    //console.log("done");
   }
   update() {
-    console.log("updating...");
+    //console.log("updating...");
     return this.fetchData().then((newData) => {
       this.render(newData);
     });
@@ -850,11 +860,13 @@ class DotPlot {
         existingDot.cluster_id = dotData.cluster;
         existingDot.move(); // Animate transition
       } else {
+        //console.log(dotData);
         let newDot = new Dot(
           dotData.id,
           dotData.reduced_embedding.x,
           dotData.reduced_embedding.y,
           dotData.segment,
+          dotData.start_position,
           dotData.sentence,
           dotData.code,
           dotData.cluster,
@@ -878,6 +890,7 @@ export interface DotPlotProps {
   projectId: number;
   source: string;
   is_dynamic?: boolean; // Assuming this prop can be optional
+  setLoading: (boolean) => void;
 }
 
 // This is the interface for the functions you're exposing.
@@ -912,20 +925,20 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
       if (plot) {
         plot.applyCodeFilter(filterValue);
       } else {
-        console.log("plot is null; queuing the filter value");
+        //console.log("plot is null; queuing the filter value");
         pendingFilterRef.current = filterValue;
       }
     },
 
     setModelType: (modelType: any) => {
-      console.log("setting model type");
-      console.log("modelType", modelType);
+      //console.log("setting model type");
+      //console.log("modelType", modelType);
       if (plot) {
         if (modelType == "dynamic") {
-          console.log("setting dynamic to true");
+          //console.log("setting dynamic to true");
           plot.is_dynamic = true;
           set_dynamic(true);
-          console.log("plot", plot);
+          //console.log("plot", plot);
           plot?.forceUpdate().then(() => plot.homeView());
           plot.train_button = trainButtonRef;
 
@@ -934,7 +947,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
             dot.setDragBehavior(plot);
           }
         } else {
-          console.log("setting dynamic to false");
+          //console.log("setting dynamic to false");
           plot.is_dynamic = false;
           set_dynamic(false);
           plot.train_button = null;
@@ -944,7 +957,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
           for (const line of plot.lines) {
             line.remove();
           }
-          console.log("plot", plot);
+          //console.log("plot", plot);
           plot?.forceUpdate().then(() => plot.homeView());
         }
       } else {
@@ -957,19 +970,19 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
 
   useEffect(() => {
     if (plot && pendingFilterRef.current) {
-      console.log("Applying queued filter value");
+      //console.log("Applying queued filter value");
       plot.applyCodeFilter(pendingFilterRef.current);
       pendingFilterRef.current = null; // Clear the pending filter
     }
   }, [plot]);
 
   useEffect(() => {
-    console.log("AAAAAAAAAAAAAAAHHHHHHHHH");
+    //console.log("AAAAAAAAAAAAAAAHHHHHHHHH");
     if (trainButtonRef.current) {
       // Your logic to connect the button.
       if (plot && plot.is_dynamic) {
-        console.log("setting up train button");
-        console.log("train button", trainButtonRef);
+        //console.log("setting up train button");
+        //console.log("train button", trainButtonRef);
         plot.train_button = trainButtonRef;
         plot.setupTrainButton();
       }
@@ -985,15 +998,15 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
   const handleOpen = () => setChangeCodeModal(true);
 
   useEffect(() => {
-    console.log("is_dynamic: ", is_dynamic);
-    console.log("isInitializedRef.current: ", isInitializedRef.current);
-    console.log("Entered UseEffect");
+    //console.log("is_dynamic: ", is_dynamic);
+    //console.log("isInitializedRef.current: ", isInitializedRef.current);
+    //console.log("Entered UseEffect");
     if (!isInitializedRef.current) {
       //} && is_dynamic != undefined) {
       if (canvasRef.current && (!is_dynamic || trainButtonRef.current)) {
-        console.log("source: ", source);
-        console.log("projectID: ", projectId);
-        console.log("is_dynamic: ", is_dynamic);
+        //console.log("source: ", source);
+        //console.log("projectID: ", projectId);
+        //console.log("is_dynamic: ", is_dynamic);
         const svg_ = d3.select(canvasRef.current);
         const container_ = d3.select("#container");
         const newPlot = new DotPlot(
@@ -1007,6 +1020,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
           handleDataUpdate,
           handleOpen,
           handleRightClick,
+            props.setLoading,
         );
         setPlot(newPlot);
 
@@ -1073,7 +1087,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
                 .then((data) => {
                   const id_list = data.data;
                   const filtered_dots = plot.data.filter((dot) => id_list.includes(dot.dotId));
-                  console.log("len dots", plot.data);
+                  //console.log("len dots", plot.data);
                   for (const dot of filtered_dots) {
                     dot.makeSuggestion();
                   }
@@ -1088,9 +1102,9 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
               className="bg-blue-900 rounded"
               ref={trainButtonRef}
               onClick={() => {
-                console.log("wanting to train plot");
-                console.log("plot: ", plot);
-                console.log("button_set", plot?.button_is_set);
+                //console.log("wanting to train plot");
+                //console.log("plot: ", plot);
+                //console.log("button_set", plot?.button_is_set);
                 if (!plot?.button_is_set) {
                   plot.train_button = trainButtonRef;
                   plot?.setupTrainButton();
@@ -1118,7 +1132,7 @@ const DotPlotComp = forwardRef<DotPlotCompHandles, DotPlotProps>((props, ref) =>
             items={plotItems || []}
             onDelete={handleDeleteItem}
             onTrain={(plot) => {
-              console.log("wanting to train lines, plot: ", plot);
+              //console.log("wanting to train lines, plot: ", plot);
               plot.trainLines();
             }}
           />

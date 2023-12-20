@@ -1,4 +1,4 @@
-import { searchCodeOccurrences } from "@/pages/api/api";
+import { searchCodeOccurrences } from "@/api/api";
 import React, { useState } from "react";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import IconButton from "@mui/material/IconButton";

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { getProjectStats, getProjects } from "@/pages/api/api";
-import { ProjectStatsResponse } from "@/pages/api/types";
+import { getProjectStats, getProjects } from "@/api/api";
+import { ProjectStatsResponse } from "@/api/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 

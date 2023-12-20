@@ -20,6 +20,7 @@ class PlotEntry(BaseModel):
     id: int
     sentence: str
     segment: str
+    start_position: int
     code: int
     reduced_embedding: Optional[Reduced_embedding]
     cluster: Optional[int]

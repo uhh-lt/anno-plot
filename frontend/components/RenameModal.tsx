@@ -1,6 +1,6 @@
 import { Button, Modal, TextField } from "@mui/material";
 import React, { useState } from "react";
-import { renameCode } from "@/pages/api/api";
+import { renameCode } from "@/api/api";
 
 /**
  * This component displays a modal for renaming a code.

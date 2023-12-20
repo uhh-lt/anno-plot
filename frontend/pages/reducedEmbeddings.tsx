@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { getReducedEmbeddings, extractReducedEmbeddings } from "@/pages/api/api";
+import { getReducedEmbeddings, extractReducedEmbeddings } from "@/api/api";
 import { Button, CircularProgress } from "@mui/material";
 import { BsListColumnsReverse } from "react-icons/bs";
 import CheckIcon from "@mui/icons-material/Check";

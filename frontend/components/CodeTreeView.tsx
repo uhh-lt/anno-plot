@@ -10,11 +10,11 @@ import { Checkbox, TextField } from "@mui/material";
 interface Category {
   id: number;
   name: string;
-  subcategories: Record<string, Category>;
+  subcategories: any;
 }
 
 interface CodeTreeViewProps {
-  taxonomyData: Record<string, Category>;
+  taxonomyData: any[];
   selectedNodes: number[]; // New prop for selected nodes
   updateSelectedNodes: (newSelectedNodes: number[]) => void;
 }
@@ -66,7 +66,7 @@ const CodeTreeView: React.FC<CodeTreeViewProps> = ({ taxonomyData, selectedNodes
     }
     return ids;
   };
-  const findNodeById = (nodeId: number, data: Record<string, Category>): Category | undefined => {
+  const findNodeById = (nodeId: number, data: any): Category | undefined => {
     for (let key in data) {
       if (data[key].id === nodeId) {
         return data[key];

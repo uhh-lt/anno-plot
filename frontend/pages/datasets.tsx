@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { getDatasets, updateDataset, deleteDataset } from "@/pages/api/api";
+import React, {useState, useEffect, useContext} from "react";
+import { getDatasets, updateDataset, deleteDataset } from "@/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import EditModal from "@/components/dataset/EditDatasetModal";
@@ -10,6 +10,7 @@ import UploadModal from "@/components/dataset/UploadDatasetModal";
 import { Button, CircularProgress } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { BsListColumnsReverse } from "react-icons/bs";
+import {AppContext} from "@/context/AppContext";
 
 type Dataset = {
   project_id: number;
@@ -25,14 +26,16 @@ export default function DatasetPage() {
   const [open, setOpen] = useState<boolean>(false);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
-  const [projectId, setProjectId] = useState(
-    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
-  );
+  const {currentProject} = useContext(AppContext);
   const [datasetId, setDatasetId] = useState(0);
   const [editData, setEditData] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [exportSuccess, setSuccess] = useState(false);
 
+  useEffect(() => {
+    //refetch datasets
+    fetchAndUpdateDatasets();
+  }, [currentProject]);
   const columns: ColumnDef<Dataset>[] = [
     {
       header: "Dataset",
@@ -91,7 +94,7 @@ export default function DatasetPage() {
                 className="cursor-pointer"
                 onClick={() => {
                   setDatasetId(info.row.original.dataset_id);
-                  setProjectId(info.row.original.project_id);
+                  //setProjectId(info.row.original.project_id);
                   setConfirmModalOpen(true);
                 }}
               />
@@ -113,7 +116,7 @@ export default function DatasetPage() {
   // Function to fetch and update project data
   const fetchAndUpdateDatasets = async () => {
     try {
-      const result = await getDatasets(projectId);
+      const result = await getDatasets(currentProject);
       let datasetData: Dataset[] = result.data;
       setDatasets(datasetData);
     } catch (error) {
@@ -121,13 +124,9 @@ export default function DatasetPage() {
     }
   };
 
-  useEffect(() => {
-    fetchAndUpdateDatasets();
-  }, []);
-
   const handleDeleteDataset = async () => {
     try {
-      await deleteDataset(projectId, datasetId);
+      await deleteDataset(currentProject, datasetId);
       fetchAndUpdateDatasets();
       setConfirmModalOpen(false);
     } catch (error) {
@@ -136,12 +135,15 @@ export default function DatasetPage() {
   };
 
   const handleEditClick = (dataset: Dataset) => {
+    console.log("Handle edit click")
+    console.log(dataset)
     setEditData({ dataset_id: dataset.dataset_id, project_id: dataset.project_id, dataset_name: dataset.dataset_name });
     setEditModalOpen(true);
   };
 
   const handleEditDataset = async (dataset: Dataset) => {
     try {
+      console.log(dataset);
       await updateDataset(dataset.project_id, dataset.dataset_id, dataset.dataset_name);
       fetchAndUpdateDatasets();
       setEditModalOpen(false);
@@ -150,6 +152,9 @@ export default function DatasetPage() {
     }
   };
 
+  if (!currentProject || currentProject === 0) {
+    return null
+  }
   return (
     <header>
       <EditModal
@@ -162,7 +167,7 @@ export default function DatasetPage() {
         open={confirmModalOpen}
         handleClose={() => setConfirmModalOpen(false)}
         onDelete={handleDeleteDataset}
-        projectId={projectId}
+        currentProject={currentProject}
         datasetId={datasetId}
       />
 
@@ -172,7 +177,7 @@ export default function DatasetPage() {
           <UploadModal
             open={open}
             handleClose={() => setOpen(false)}
-            projectId={projectId}
+            currentProject={currentProject}
             updateDatasets={fetchAndUpdateDatasets}
             setLoading={setLoading}
             setSuccess={setSuccess}

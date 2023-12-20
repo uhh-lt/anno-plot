@@ -15,8 +15,9 @@ def build_category_tree(codes):
     mapper = {}
     for code in codes:
         temp_code = {
-            "id": code.code_id,
-            "name": code.text,
+            "code_id": code.code_id,
+            "text": code.text,
+            "color": code.color,
             "subcategories": {},
         }
         mapper[code.code_id] = temp_code

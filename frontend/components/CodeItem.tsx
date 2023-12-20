@@ -1,7 +1,7 @@
 import Image from "next/image";
 import icon from "@/public/code_icon.svg";
 import React, { useEffect, useState } from "react";
-import { getCodeRoute } from "@/pages/api/api";
+import { getCodeRoute } from "@/api/api";
 
 /**
  * This component displays information about a specific code item, including an icon and the code's name. It fetches the

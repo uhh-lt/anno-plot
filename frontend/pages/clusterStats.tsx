@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
-import { getClusterStats, getProjects } from "@/pages/api/api";
-import { ClusterStatsResponse } from "@/pages/api/types";
+import { getClusterStats, getProjects } from "@/api/api";
+import { ClusterStatsResponse } from "@/api/types";
 import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement);

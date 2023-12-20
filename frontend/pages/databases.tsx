@@ -6,7 +6,7 @@ import {
   downloadFile,
   listFiles,
   initTables,
-} from "@/pages/api/api";
+} from "@/api/api";
 import Header from "@/components/Header";
 import { getCoreRowModel, ColumnDef, flexRender, useReactTable } from "@tanstack/react-table";
 import Delete from "@mui/icons-material/Delete";

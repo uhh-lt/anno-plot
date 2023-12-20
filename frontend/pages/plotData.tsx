@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { getPlots, searchSentence, searchCode, searchCluster, searchSegment, exportToFiles } from "@/pages/api/api";
+import { getPlots, searchSentence, searchCode, searchCluster, searchSegment, exportToFiles } from "@/api/api";
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";

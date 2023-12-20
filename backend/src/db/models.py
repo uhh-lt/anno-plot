@@ -4,25 +4,25 @@ from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import relationship
 
 from db.base import Base
-
+from sqlalchemy import Index
 
 class Project(Base):
     __tablename__ = "Project"
 
     project_id = Column(Integer, primary_key=True)
-    config_id = Column(Integer, ForeignKey("Config.config_id", ondelete="CASCADE"))
+    config_id = Column(Integer, ForeignKey("Config.config_id", ondelete="CASCADE"), index=True)
 
     project_name = Column(String(255), nullable=False)
 
     datasets = relationship(
-        "Dataset", cascade="all, delete, delete-orphan", back_populates="project"
+        "Dataset", back_populates="project"#, cascade="all, delete, delete-orphan"
     )
     codes = relationship(
-        "Code", cascade="all, delete, delete-orphan", back_populates="project"
+        "Code", back_populates="project"#, cascade="all, delete, delete-orphan"
     )
     # config = relationship("Config", cascade="all, delete, delete-orphan", back_populates="project")
     models = relationship(
-        "Model", cascade="all, delete, delete-orphan", back_populates="project"
+        "Model", back_populates="project"#, cascade="all, delete, delete-orphan"
     )
 
 
@@ -30,13 +30,13 @@ class Dataset(Base):
     __tablename__ = "Dataset"
 
     dataset_id = Column(Integer, primary_key=True)
-    project_id = Column(Integer, ForeignKey("Project.project_id", ondelete="CASCADE"))
+    project_id = Column(Integer, ForeignKey("Project.project_id", ondelete="CASCADE"), index=True)
 
     dataset_name = Column(String(255), nullable=False)
 
     project = relationship("Project", back_populates="datasets")
     sentences = relationship(
-        "Sentence", cascade="all, delete, delete-orphan", back_populates="dataset"
+        "Sentence", back_populates="dataset"#, cascade="all, delete, delete-orphan"
     )
 
 
@@ -44,7 +44,7 @@ class Sentence(Base):
     __tablename__ = "Sentence"
 
     sentence_id = Column(Integer, primary_key=True)
-    dataset_id = Column(Integer, ForeignKey("Dataset.dataset_id", ondelete="CASCADE"))
+    dataset_id = Column(Integer, ForeignKey("Dataset.dataset_id", ondelete="CASCADE"), index=True)
 
     text = Column(Text, nullable=False)
     text_tsv = Column("sentence_tsv", TSVECTOR, Computed("to_tsvector('english', text)"))
@@ -52,7 +52,7 @@ class Sentence(Base):
 
     dataset = relationship("Dataset", back_populates="sentences")
     segments = relationship(
-        "Segment", cascade="all, delete, delete-orphan", back_populates="sentence"
+        "Segment", back_populates="sentence"#, cascade="all, delete, delete-orphan"
     )
 
 
@@ -60,16 +60,16 @@ class Segment(Base):
     __tablename__ = "Segment"
 
     segment_id = Column(Integer, primary_key=True)
-    sentence_id = Column(Integer, ForeignKey("Sentence.sentence_id", ondelete="CASCADE"))
+    sentence_id = Column(Integer, ForeignKey("Sentence.sentence_id", ondelete="CASCADE"), index=True)
 
     text = Column(Text, nullable=False)
     text_tsv = Column("sentence_tsv", TSVECTOR, Computed("to_tsvector('english', text)"))
     start_position = Column(Integer, nullable=False)
-    code_id = Column(Integer, ForeignKey("Code.code_id", ondelete="CASCADE"))
+    code_id = Column(Integer, ForeignKey("Code.code_id", ondelete="CASCADE"), index=True)
 
     sentence = relationship("Sentence", back_populates="segments")
     embedding = relationship(
-        "Embedding", cascade="all, delete, delete-orphan", back_populates="segment"
+        "Embedding", back_populates="segment"#, cascade="all, delete, delete-orphan"
     )
     code = relationship("Code", back_populates="segments")
 
@@ -78,16 +78,16 @@ class Embedding(Base):
     __tablename__ = "Embedding"
 
     embedding_id = Column(Integer, primary_key=True)
-    segment_id = Column(Integer, ForeignKey("Segment.segment_id", ondelete="CASCADE"))
-    model_id = Column(Integer, ForeignKey("Model.model_id"))
+    segment_id = Column(Integer, ForeignKey("Segment.segment_id", ondelete="CASCADE"), index=True)
+    model_id = Column(Integer, ForeignKey("Model.model_id"), index=True)
 
     embedding_value = Column(LargeBinary, nullable=False)
 
     segment = relationship("Segment", back_populates="embedding")
     reduced_embeddings = relationship(
         "ReducedEmbedding",
-        cascade="all, delete, delete-orphan",
-        back_populates="embedding",
+        back_populates="embedding"
+        #, cascade="all, delete, delete-orphan"
     )
     model = relationship("Model")
 
@@ -97,9 +97,9 @@ class ReducedEmbedding(Base):
 
     reduced_embedding_id = Column(Integer, primary_key=True)
     embedding_id = Column(
-        Integer, ForeignKey("Embedding.embedding_id", ondelete="CASCADE")
+        Integer, ForeignKey("Embedding.embedding_id", ondelete="CASCADE"), index=True
     )
-    model_id = Column(Integer, ForeignKey("Model.model_id"))
+    model_id = Column(Integer, ForeignKey("Model.model_id"), index=True)
 
     pos_x = Column(Float, nullable=False)
     pos_y = Column(Float, nullable=False)
@@ -112,8 +112,9 @@ class Code(Base):
     __tablename__ = "Code"
 
     code_id = Column(Integer, primary_key=True)
-    parent_code_id = Column(Integer, ForeignKey("Code.code_id", ondelete="CASCADE"))
-    project_id = Column(Integer, ForeignKey("Project.project_id", ondelete="CASCADE"))
+    parent_code_id = Column(Integer, ForeignKey("Code.code_id", ondelete="CASCADE"), index=True)
+    project_id = Column(Integer, ForeignKey("Project.project_id", ondelete="CASCADE"), index=True)
+    color = Column(String(255), nullable=False)
 
     text = Column(Text, nullable=False)
 
@@ -136,10 +137,10 @@ class Cluster(Base):
 
     cluster_id = Column(Integer, primary_key=True)
     reduced_embedding_id = Column(
-        Integer, ForeignKey("ReducedEmbedding.reduced_embedding_id", ondelete="CASCADE")
+        Integer, ForeignKey("ReducedEmbedding.reduced_embedding_id", ondelete="CASCADE"), index=True
     )
-    model_id = Column(Integer, ForeignKey("Model.model_id"))
-    cluster = Column("cluster", Integer)
+    model_id = Column(Integer, ForeignKey("Model.model_id"), index=True)
+    cluster = Column("cluster", Integer, index=True)
 
 
 class Config(Base):

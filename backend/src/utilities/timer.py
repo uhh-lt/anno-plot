@@ -10,6 +10,7 @@ class Timer:
 
     def __enter__(self):
         self.start_time = time.time()
+        logging.log(self.log_level, f"{self.name} started.")
 
     def __exit__(self, type, value, traceback):
         elapsed_time = time.time() - self.start_time

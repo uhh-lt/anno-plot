@@ -1,10 +1,10 @@
-import data from "../src/NER_Tags.json";
+//import data from "../src/NER_Tags.json";
 import React, { useEffect, useRef, useState } from "react";
 import Header from "@/components/Header";
 import { Button } from "@mui/material";
 import AddCodeModal from "@/components/AddCodeModal";
 import CodeTreeView from "@/components/CodeTreeView";
-import { getCodeRoute, getCodeTree } from "@/pages/api/api";
+import { getCodeRoute, getCodeTree } from "@/api/api";
 import { useRouter } from "next/router";
 import LoadingModal from "@/components/LoadingModal";
 import * as d3 from "d3";
@@ -34,7 +34,7 @@ export default function CodeView() {
   const [openRenameModal, setOpenRenameModal] = useState(false);
   const [openShowModal, setOpenShowModal] = useState(false);
   const [openDeleteCodeModal, setOpenDeleteCodeModal] = useState(false);
-  const [jsonData, setJsonData] = useState(data);
+  const [jsonData, setJsonData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [projectId, setProjectId] = useState(
     typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
@@ -90,6 +90,7 @@ export default function CodeView() {
         handleOpenDelete,
         handleOpenRename,
         handleOpenShow,
+          setLoading,
       );
 
       setPlot(newPlot);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getSentences, getDatasets } from "@/pages/api/api";
+import { getSentences, getDatasets } from "@/api/api";
 import Header from "@/components/Header";
 import {
   Button,
