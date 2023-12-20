@@ -35,6 +35,10 @@ const defaultData = {
     trainClusters: async () => {},
     codeAveragePositions: [],
     trainArrows: async () => {},
+    showCluster: false,
+    showError: false,
+    setShowCluster: (value: boolean) => {},
+    setShowError: (value: boolean) => {},
 };
 
 export const AppContext = createContext(defaultData);
@@ -55,6 +59,8 @@ export const AppProvider = ({ children }) => {
 
     const [arrows, setArrows] = useState<any[]>([]);
     const [config, setConfig] = useState<any>(null);
+    const [showCluster, setShowCluster] = useState(false);
+    const [showError, setShowError] = useState(false);
 
 
     useEffect(() => {
@@ -120,6 +126,7 @@ export const AppProvider = ({ children }) => {
             await  fetchData(true);//false);
             await fetchCodes();
             await fetchConfig();
+            await fetchErrors();
             setLoading(false)
         }
     }
@@ -180,8 +187,8 @@ export const AppProvider = ({ children }) => {
     const fetchErrors = async () => {
         if(currentProject!=0) {
             console.log("Fetching Errors");
-            const errors_response = await getClusterErrors(currentProject, 20, 0.7);
-            setErrors(errors_response.data);
+            const errors_response = await getClusterErrors(currentProject, 0, 0.7);
+            setErrors(errors_response.data.data);
         }
     }
 
@@ -211,6 +218,10 @@ export const AppProvider = ({ children }) => {
         setLoading,
         codeAveragePositions,
         trainArrows,
+        showCluster,
+        showError,
+        setShowCluster,
+        setShowError,
     };
 
     return (

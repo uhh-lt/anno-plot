@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile
 from sqlalchemy import and_
 from sqlalchemy.orm import Session, aliased
+import threading
 
 from clusters.router import extract_clusters_endpoint
 from dataset.router import upload_dataset
@@ -29,6 +30,7 @@ from utilities.timer import Timer
 # TODO: dont use the router, move stuff to services
 router = APIRouter()
 from sqlalchemy import func
+import gc
 
 @router.get("/")
 async def get_plot_endpoint(
@@ -39,81 +41,82 @@ async def get_plot_endpoint(
     db: Session = Depends(get_db),
 ) -> PlotTable:
     clusters = True
-    async with db_lock:
-        extract_embeddings_endpoint(project_id, db=db)
-        extract_embeddings_reduced_endpoint(project_id, db=db)
-        if clusters:
-            with Timer("Extracting clusters"):
-                extract_clusters_endpoint(project_id, db=db)
-        db.commit()
-    plots = []
 
+    extract_embeddings_endpoint(project_id, db = db)
+    extract_embeddings_reduced_endpoint(project_id, db = db)
+    if clusters:
+        with Timer("Extracting clusters"):
+            extract_clusters_endpoint(project_id, db = db)
 
+    db.commit()
+    gc.collect()
 
     if clusters:
-        ReducedEmbeddingAlias = aliased(ReducedEmbedding)
-        EmbeddingAlias = aliased(Embedding)
-        SegmentAlias = aliased(Segment)
-        SentenceAlias = aliased(Sentence)
-        CodeAlias = aliased(Code)
-        ProjectAlias = aliased(Project)
-        # get config id from project id
-        project: ProjectService = ProjectService(project_id, db)
-        model_entry = project.get_model_entry("cluster_config")
-        query = (
-            db.query(
-                Cluster,
-                ReducedEmbeddingAlias,
-                EmbeddingAlias,
-                SegmentAlias,
-                SentenceAlias,
-                CodeAlias,
-                ProjectAlias,
+        async with db_lock:
+            ReducedEmbeddingAlias = aliased(ReducedEmbedding)
+            EmbeddingAlias = aliased(Embedding)
+            SegmentAlias = aliased(Segment)
+            SentenceAlias = aliased(Sentence)
+            CodeAlias = aliased(Code)
+            ProjectAlias = aliased(Project)
+            # get config id from project id
+            project: ProjectService = ProjectService(project_id, db)
+            model_entry = project.get_model_entry("cluster_config")
+            query = (
+                db.query(
+                    Cluster,
+                    ReducedEmbeddingAlias,
+                    EmbeddingAlias,
+                    SegmentAlias,
+                    SentenceAlias,
+                    CodeAlias,
+                    ProjectAlias,
+                )
+                .filter(ProjectAlias.project_id == project_id)
+                .filter(Cluster.model_id == model_entry.model_id)
+                .join(
+                    ReducedEmbeddingAlias,
+                    Cluster.reduced_embedding_id == ReducedEmbeddingAlias.reduced_embedding_id,
+                )
+                .join(
+                    EmbeddingAlias,
+                    ReducedEmbeddingAlias.embedding_id == EmbeddingAlias.embedding_id,
+                )
+                .join(SegmentAlias, EmbeddingAlias.segment_id == SegmentAlias.segment_id)
+                .join(SentenceAlias, SegmentAlias.sentence_id == SentenceAlias.sentence_id)
+                .join(CodeAlias, SegmentAlias.code_id == CodeAlias.code_id)
+                .join(ProjectAlias, CodeAlias.project_id == ProjectAlias.project_id)
             )
-            .filter(ProjectAlias.project_id == project_id)
-            .filter(Cluster.model_id == model_entry.model_id)
-            .join(
-                ReducedEmbeddingAlias,
-                Cluster.reduced_embedding_id == ReducedEmbeddingAlias.reduced_embedding_id,
-            )
-            .join(
-                EmbeddingAlias,
-                ReducedEmbeddingAlias.embedding_id == EmbeddingAlias.embedding_id,
-            )
-            .join(SegmentAlias, EmbeddingAlias.segment_id == SegmentAlias.segment_id)
-            .join(SentenceAlias, SegmentAlias.sentence_id == SentenceAlias.sentence_id)
-            .join(CodeAlias, SegmentAlias.code_id == CodeAlias.code_id)
-            .join(ProjectAlias, CodeAlias.project_id == ProjectAlias.project_id)
-        )
     else:
-        EmbeddingAlias = aliased(Embedding)
-        SegmentAlias = aliased(Segment)
-        SentenceAlias = aliased(Sentence)
-        CodeAlias = aliased(Code)
-        ProjectAlias = aliased(Project)
-        # get config id from project id
-        project: ProjectService = ProjectService(project_id, db)
-        model_entry = project.get_model_entry("reduction_config")
-        query = (
-            db.query(
-                ReducedEmbedding,
-                EmbeddingAlias,
-                SegmentAlias,
-                SentenceAlias,
-                CodeAlias,
-                ProjectAlias,
+        async with db_lock:
+            EmbeddingAlias = aliased(Embedding)
+            SegmentAlias = aliased(Segment)
+            SentenceAlias = aliased(Sentence)
+            CodeAlias = aliased(Code)
+            ProjectAlias = aliased(Project)
+            # get config id from project id
+            project: ProjectService = ProjectService(project_id, db)
+            model_entry = project.get_model_entry("reduction_config")
+            query = (
+                db.query(
+                    ReducedEmbedding,
+                    EmbeddingAlias,
+                    SegmentAlias,
+                    SentenceAlias,
+                    CodeAlias,
+                    ProjectAlias,
+                )
+                .filter(ProjectAlias.project_id == project_id)
+                .filter(ReducedEmbedding.model_id == model_entry.model_id)
+                .join(
+                    EmbeddingAlias,
+                    ReducedEmbedding.embedding_id == EmbeddingAlias.embedding_id,
+                )
+                .join(SegmentAlias, EmbeddingAlias.segment_id == SegmentAlias.segment_id)
+                .join(SentenceAlias, SegmentAlias.sentence_id == SentenceAlias.sentence_id)
+                .join(CodeAlias, SegmentAlias.code_id == CodeAlias.code_id)
+                .join(ProjectAlias, CodeAlias.project_id == ProjectAlias.project_id)
             )
-            .filter(ProjectAlias.project_id == project_id)
-            .filter(ReducedEmbedding.model_id == model_entry.model_id)
-            .join(
-                EmbeddingAlias,
-                ReducedEmbedding.embedding_id == EmbeddingAlias.embedding_id,
-            )
-            .join(SegmentAlias, EmbeddingAlias.segment_id == SegmentAlias.segment_id)
-            .join(SentenceAlias, SegmentAlias.sentence_id == SentenceAlias.sentence_id)
-            .join(CodeAlias, SegmentAlias.code_id == CodeAlias.code_id)
-            .join(ProjectAlias, CodeAlias.project_id == ProjectAlias.project_id)
-        )
 
     count = query.count()
     response: PlotTable = {}
@@ -556,8 +559,7 @@ async def stats_endpoint(project_id: int, db: Session = Depends(get_db)):
             code_segments_count = {}
             code_segments_count["codes"] = []
             if project.codes:
-
-
+                print(project.codes)
                 for code in project.codes:
                     average_position = (
                         db.query(

@@ -6,16 +6,106 @@ import { AppContext } from '@/context/AppContext';
 //import '../style/DotPlotWebGL.css';
 import Annotation from "./Annotation.tsx";
 import {hexToRGBA} from "@/utilities.tsx";
+import dynamic from "next/dynamic";
+import ContextMenu from "@/components/CodeTree/ContextMenu";
+import ContextMenuCodeDot from "@/components/plotView/ContextMenuDot";
 
-export const DotPlotWebGL = ({ handleHover, handleRightClick}) => {
+
+const createClusterErrorData = (data, errors, show_errors, show_clusters) => {
+    let errorIds = new Set(errors);
+    if (!show_errors) {
+        errorIds = new Set([]);
+    }
+const errorData = data.filter(item => errorIds.has(item.id));
+const nonErrorData = data.filter(item => !errorIds.has(item.id));
+
+
+const highlight_size = 60;
+const dot_size = 70;
+const error_size = 10;
+
+const highlightedNonErrorData = nonErrorData.flatMap(item => {
+        const highlightDot = (show_clusters && item.cluster !== -1) ? [{
+            id: -1,
+            x: item.reduced_embedding.x,
+            y: item.reduced_embedding.y,
+            r: dot_size + highlight_size,
+            code_id: item.code,
+            cluster_id: item.cluster
+        }] : [];
+
+        const originalDot = {
+            id: item.id,
+            x: item.reduced_embedding.x,
+            y: item.reduced_embedding.y,
+            r: dot_size,
+            code_id: item.code,
+            cluster_id: item.cluster
+        };
+
+        return [...highlightDot, originalDot];
+    });
+
+
+const highlightedErrorData = errorData.flatMap(item => {
+    const highlightDot = (show_clusters && item.cluster !== -1) ? [{
+            id: -1,
+            x: item.reduced_embedding.x,
+            y: item.reduced_embedding.y,
+            r: dot_size + highlight_size,
+            code_id: item.code,
+            cluster_id: item.cluster
+        }] : [];
+
+    const originalDot = {
+        id: item.id,
+        x: item.reduced_embedding.x,
+        y: item.reduced_embedding.y,
+        r: dot_size,
+        code_id: item.code,
+        cluster_id: item.cluster
+    };
+
+    const errorHighlightDot = {
+        id: -2,
+        x: item.reduced_embedding.x,
+        y: item.reduced_embedding.y,
+        r: error_size, // Smaller radius for the error dot
+        code_id: item.code,
+        cluster_id: item.cluster,
+    };
+
+    return [...highlightDot, originalDot, errorHighlightDot];
+});
+
+    return [...highlightedNonErrorData, ...highlightedErrorData];
+}
+
+export const DotPlotWebGL = () => {
     const ref = useRef(null);
-    const { data, errors,arrows, setArrows, loading,  clusters, codes, selected, fetchProject, currentProject, filteredCodes } = useContext(AppContext);
+    const { showCluster, showError, data, errors,arrows, setArrows, loading, codes, config,  fetchProject, currentProject, filteredCodes } = useContext(AppContext);
     const [initialized, setInitialized] = useState(false);
     const [d3Manager, setD3Manager] = useState(null);
     const [showAnnotations, setShowAnnotations] = useState(false);
     const [annotationCoord, setAnnotationCoord] = useState([0,0]);
     const [annotationData, setAnnotationData] = useState(null);
     const [codeColor, setCodeColor] = useState("");
+    const [contextMenu, setContextMenu] = useState({
+        event: null,
+        nodeId: null,
+        selected: [],
+        key: null,
+    });
+
+    const handleRightClick = (event, d) => {
+
+        setContextMenu({
+            event: event,
+            nodeId: d.id,
+            selected: [d.id],
+            key: d.id,
+        });
+    }
 
     useEffect(() => {
         if (currentProject === 0) {
@@ -34,32 +124,33 @@ export const DotPlotWebGL = ({ handleHover, handleRightClick}) => {
             setD3Manager(newManager);
             setInitialized(true);
         //});
-    }, [loading, currentProject]);
+    }, [currentProject]); // loading used to be here
     useEffect(() => {
         // Initialize the D3 manager with the ref and handler functions
         if (!initialized) {
             return;
         }
 
-        // only set dots whos code is in filteredCodes
-        const d3_data = data.filter(item => filteredCodes.includes(item.code)).map(item => ({
-        id: item.id,
-        x: item.reduced_embedding.x,
-        y: item.reduced_embedding.y,
-        r: 5, // Radius is always 1
-        code_id: item.code
-    }));
-        // filter arrows based on weather the code is in filteredCodes
-        const filtered_arrows = arrows.filter(arrow => filteredCodes.includes(arrow.code_id));
-        d3Manager.ownFunctionZoomColor(d3_data, codes, filtered_arrows);
+        // only set dots which should be shown, and represent data
+        const filtered_data = data.filter(item => filteredCodes.includes(item.code));
+        const highlightedDataWithError = createClusterErrorData(filtered_data, errors, showError, showCluster);
+        let filtered_arrows = arrows.filter(arrow => filteredCodes.includes(arrow.code_id));
+        console.log(config);
+        const dynamic = config?.model_type === "dynamic";
+        if (!dynamic) {
+            filtered_arrows = [];
+        }
+        d3Manager.ownFunctionZoomColor(highlightedDataWithError, codes, filtered_arrows, dynamic);
         d3Manager.handle_hover = handleHoverLocal;
         d3Manager.handle_set_arrow = handleSetArrow;
+
+
 
         // Update the plot when data or other dependencies change
         return () => {
             // Cleanup if necessary, e.g., removing event listeners
         };
-    }, [initialized, data, errors, codes, selected, filteredCodes, arrows]);
+    }, [showCluster, showError, initialized, data, errors, codes, config, filteredCodes, arrows]);
 
     const handleSetArrow = (data) => {
         const arrow_id = data.dot_id;
@@ -95,12 +186,14 @@ export const DotPlotWebGL = ({ handleHover, handleRightClick}) => {
         setShowAnnotations(true);
     }
     return (
-
+        <>
+<ContextMenuCodeDot key={contextMenu.key} event={contextMenu.event} nodeId={contextMenu.nodeId} selected={contextMenu.selected}/>
     <div id="chart-container" style={{ width: '100%', height: '1000px', position: "relative"}}>
         {showAnnotations && <Annotation data={annotationData} color={codeColor} />}
         <div id="chart" style={{ width: '100%', height: '100%', position: 'relative'}}></div>
 
     </div>
+            </>
 );
 
 };

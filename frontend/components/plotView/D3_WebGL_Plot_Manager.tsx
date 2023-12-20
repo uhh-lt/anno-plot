@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as fc from 'd3fc';
-import {webglColor} from "@/utilities.tsx";
+import {hashCode, webglColor} from "@/utilities.tsx";
 import {arrowSeries, initializeArrows} from "./Arrows.tsx";
 
 export class D3_WebGL_Plot_Manager {
@@ -36,35 +36,18 @@ export class D3_WebGL_Plot_Manager {
 
     }
 
-    private ownFunctionZoomColor = (data, categories, arrows = [{
-        "dot_id": 0,
-        "start": {"x": 5.1, "y": 5.1},
-        "end": {"x": -150.1, "y": -150.1},
-        "code_id": 36
-    }, {
-    "dot_id": 10939,
-    "start": {
-        "x": 3.6044911861419678,
-        "y": 2.914689779281616
-    },
-    "end": {
-        "x": 3.0044911861419678,
-        "y": 2.914689779281616
-    },
-    "code_id": 39
-}], labels = null) => {
-        let isMouseDown = false;
-let isDragging = false;
-let draggedPoint = null;
-        let quadtree = d3
+    private ownFunctionZoomColor = (data, categories, arrows, dynamic) => {
+
+        const data_without_cluster_or_errors = data.filter(d => d.id >= 0);
+
+        const quadtree = d3
             .quadtree()
             .x(d => d.x)
             .y(d => d.y)
-            .addAll(data);
+            .addAll(data_without_cluster_or_errors);
 
         const containerElement = document.getElementById('chart');
         containerElement.innerHTML = '';
-        //const svg = d3.select(containerElement).append("svg");
         const svg = initializeArrows(containerElement);
 
 
@@ -89,6 +72,7 @@ let draggedPoint = null;
             .equals((a, b) => {
                 return a === b;
             })
+            .size(d => d.r)
             .crossValue(d => d.x)
             .mainValue(d => d.y);
 
@@ -99,7 +83,20 @@ let draggedPoint = null;
             idToColorMapper[item.code_id] = item.color;
         });
 
-        const categoryFill = d => webglColor(idToColorMapper[d.code_id]);
+
+        const clusterColorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+        const categoryFill = d => {
+            if(d.id>=0) {
+                return webglColor(idToColorMapper[d.code_id]);
+            }
+            if (d.id === -1) {
+                // cluster denoting point:
+                return webglColor(clusterColorScale(String(d.cluster_id % 10)));
+            }
+            // it should return red
+            return webglColor("#FF0000");
+        }
         const fillColor = fc.webglFillColor().value(categoryFill).data(data);
         pointSeries.decorate(program => fillColor(program));
 
@@ -210,11 +207,16 @@ let draggedPoint = null;
             this.handle_set_arrow(arrow);
         }
 
-        const trydrag = d3.drag().subject(onSubjectDrag)
+        let trydrag = d3.drag().subject(onSubjectDrag)
                 .on('start', initDrag) // Assuming abc is your drag start handler function
                 .on('drag', onDragTry)  // Assuming abc is your drag during handler function
                 .on('end', onDragEndTry);
-
+        if(!dynamic) {
+            trydrag = d3.drag().subject(()=> null)
+                .on('start', initDrag) // Assuming abc is your drag start handler function
+                .on('drag', onDragTry)  // Assuming abc is your drag during handler function
+                .on('end', onDragEndTry);
+        }
 
         function onDrag(event, d) {
             const [x_coord, y_coord] = d3.pointer(event);
@@ -242,7 +244,8 @@ let draggedPoint = null;
     }
 
 
-
+const handle_right_click = this.handle_right_click;
+        const handle_hover = this.handle_hover;
 
         const chart = fc
             .chartCartesian(xScale, yScale)
@@ -281,7 +284,21 @@ let draggedPoint = null;
                     .call(trydrag)
                     .call(zoom)
                     .call(pointer)
-            );
+                .on("contextmenu", function(event, d) {
+                    // check if it hit an object in the quadtree
+                    const [x_coord, y_coord] = d3.pointer(event);
+                    const x = xScale.invert(x_coord);
+                    const y = yScale.invert(y_coord);
+                    const radius = Math.abs(xScale.invert(x_coord) - xScale.invert(x_coord - 5));
+                    const closestDatum = quadtree.find(x, y,
+                           radius);
+                    if (closestDatum) {
+                        event.preventDefault();
+                        handle_hover({}, -1);
+                        handle_right_click(event, closestDatum);
+                    }
+
+            }));
         const redraw = () => {
             this.handle_hover({}, -1);
             d3.select("#chart")

@@ -15,14 +15,14 @@ class Project(Base):
     project_name = Column(String(255), nullable=False)
 
     datasets = relationship(
-        "Dataset", back_populates="project", cascade="all, delete, delete-orphan"
+        "Dataset", back_populates="project"#, cascade="all, delete, delete-orphan"
     )
     codes = relationship(
-        "Code", back_populates="project", cascade="all, delete, delete-orphan"
+        "Code", back_populates="project"#, cascade="all, delete, delete-orphan"
     )
     # config = relationship("Config", cascade="all, delete, delete-orphan", back_populates="project")
     models = relationship(
-        "Model", back_populates="project", cascade="all, delete, delete-orphan"
+        "Model", back_populates="project"#, cascade="all, delete, delete-orphan"
     )
 
 
@@ -36,7 +36,7 @@ class Dataset(Base):
 
     project = relationship("Project", back_populates="datasets")
     sentences = relationship(
-        "Sentence", back_populates="dataset", cascade="all, delete, delete-orphan"
+        "Sentence", back_populates="dataset"#, cascade="all, delete, delete-orphan"
     )
 
 
@@ -52,7 +52,7 @@ class Sentence(Base):
 
     dataset = relationship("Dataset", back_populates="sentences")
     segments = relationship(
-        "Segment", back_populates="sentence", cascade="all, delete, delete-orphan"
+        "Segment", back_populates="sentence"#, cascade="all, delete, delete-orphan"
     )
 
 
@@ -69,7 +69,7 @@ class Segment(Base):
 
     sentence = relationship("Sentence", back_populates="segments")
     embedding = relationship(
-        "Embedding", back_populates="segment", cascade="all, delete, delete-orphan"
+        "Embedding", back_populates="segment"#, cascade="all, delete, delete-orphan"
     )
     code = relationship("Code", back_populates="segments")
 
@@ -87,7 +87,7 @@ class Embedding(Base):
     reduced_embeddings = relationship(
         "ReducedEmbedding",
         back_populates="embedding"
-        , cascade="all, delete, delete-orphan"
+        #, cascade="all, delete, delete-orphan"
     )
     model = relationship("Model")
 

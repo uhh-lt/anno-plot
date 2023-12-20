@@ -50,3 +50,9 @@ export const hexToRGBA = (hex, alpha = 1) => {
     const b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
+
+export const hashCode = s =>
+  s.split("").reduce((a, b) => {
+    a = (a << 5) - a + b.charCodeAt(0);
+    return a & a;
+  }, 0);

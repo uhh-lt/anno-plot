@@ -230,6 +230,17 @@ export const deleteCodeRoute = (project_id: number, id: number): Promise<any> =>
   return axios.delete(`${baseURL}/projects/${project_id}/codes/${id}`);
 };
 
+export const deleteSegment = (project_id: number, id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/plots/segment/${id}`);
+    return axios.delete(`${baseURL}/projects/${project_id}/plots/segment/${id}`);
+}
+
+
+export const addCodeToSegmentRoute = (project_id: number, id: number, code_id: number): Promise<any> => {
+    console.log(`${baseURL}/projects/${project_id}/plots/segment/${id}?code_id=${code_id}`);
+    return axios.put(`${baseURL}/projects/${project_id}/plots/segment/${id}?code_id=${code_id}`);
+}
+
 export const insertCodeRoute = (codeName: string, project_id: number): Promise<any> => {
   console.log(`${baseURL}/projects/${project_id}/codes/?code_name=${codeName}`);
   return axios.post(`${baseURL}/projects/${project_id}/codes/?code_name=${codeName}`);

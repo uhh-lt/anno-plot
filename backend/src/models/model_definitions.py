@@ -3,7 +3,7 @@ import logging
 import os
 import pickle
 from typing import Any, Union
-
+import gc
 import numpy as np
 import torch
 import tqdm
@@ -368,8 +368,11 @@ class DynamicUmap:
         self._model = None
 
     def fit(self, data: Union[np.ndarray, list]) -> bool:
+        print("garbage collecting before dynamic umap")
+        gc.collect()
         if len(data) == 0:
             raise ValueError("The data is empty.")
+        print(self.arguments)
         self._model = PUMAP(**self.arguments)
         if type(data) == type(np.ndarray([])):
             data = torch.tensor(data)
