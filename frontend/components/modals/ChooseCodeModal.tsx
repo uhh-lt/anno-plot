@@ -1,34 +1,29 @@
-import { useContext, useState } from 'react';
-import Modal from '@mui/material/Modal';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon'; // Import ListItemIcon
-import Checkbox from '@mui/material/Checkbox'; // Import Checkbox
-import { AppContext } from '../../context/AppContext.tsx';
-import {getPath} from "../../utilities.tsx";
+import { useContext, useState } from "react";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemIcon from "@mui/material/ListItemIcon"; // Import ListItemIcon
+import Checkbox from "@mui/material/Checkbox"; // Import Checkbox
+import { AppContext } from "../../context/AppContext";
+import { getPath } from "../../utilities";
 
 function ChooseCodeModal({ open, onSave, onCancel, multiSelect }) {
   const { codes } = useContext(AppContext);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 400,
-    bgcolor: 'background.paper',
+    bgcolor: "background.paper",
     boxShadow: 24,
     p: 4,
-  };
-
-  const listStyle = {
-    maxHeight: '500px',
-    overflowY: 'auto',
   };
 
   const handleListItemClick = (codeId) => {
@@ -48,7 +43,12 @@ function ChooseCodeModal({ open, onSave, onCancel, multiSelect }) {
   return (
     <Modal open={open} onClose={onCancel}>
       <Box sx={modalStyle}>
-        <List style={listStyle}>
+        <List
+          style={{
+            maxHeight: "500px",
+            overflowY: "auto",
+          }}
+        >
           {codes.map((code) => (
             <ListItem
               key={code.code_id}
@@ -64,16 +64,22 @@ function ChooseCodeModal({ open, onSave, onCancel, multiSelect }) {
                     disableRipple
                   />
                 </ListItemIcon>
-                <ListItemText primary={getPath(codes, code)} style = {{ color : "black"}}/>
+                <ListItemText primary={getPath(codes, code)} style={{ color: "black" }} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
-        <div style={{ textAlign: 'right' }}>
+        <div style={{ textAlign: "right" }}>
           <Button onClick={onCancel} color="secondary">
             Cancel
           </Button>
-          <Button onClick={() => {onSave(selectedCategories)}} color="primary" style={{ marginLeft: '10px' }}>
+          <Button
+            onClick={() => {
+              onSave(selectedCategories);
+            }}
+            color="primary"
+            style={{ marginLeft: "10px" }}
+          >
             Save
           </Button>
         </div>

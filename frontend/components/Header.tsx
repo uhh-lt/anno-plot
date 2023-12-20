@@ -1,6 +1,6 @@
 import { Menu } from "@mui/icons-material";
 import { Accordion, AccordionSummary, Drawer } from "@mui/material";
-import {useContext, useEffect, useState} from "react";
+import { useContext, useEffect, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useRouter } from "next/router";
@@ -21,7 +21,7 @@ import DataArrayIcon from "@mui/icons-material/DataArray";
 import PlaceIcon from "@mui/icons-material/Place";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import SchemaIcon from "@mui/icons-material/Schema";
-import { AppContext } from "@/context/AppContext.tsx";
+import { AppContext } from "@/context/AppContext";
 /**
  * This component represents the header of the application, including the navigation menu, project selection, and various links to different views and statistics.
  */
@@ -29,7 +29,7 @@ import { AppContext } from "@/context/AppContext.tsx";
 export default function Header(props) {
   const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const {projects, currentProject, setCurrentProject} = useContext(AppContext);
+  const { projects, currentProject, setCurrentProject } = useContext(AppContext);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -86,23 +86,23 @@ export default function Header(props) {
               component="label"
               onClick={() => {
                 console.log("routing to project");
-                router.push(`/projects`);}}
+                router.push(`/projects`);
+              }}
               style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
               <span>Projects</span>
               <BusinessCenterIcon />
             </Button>
             <Button
-                variant="outlined"
-                component="label"
-                onClick={() => router.push(`/datasets`)}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-              >
-                <span>Datasets</span>
-                <DatasetIcon />
-              </Button>
-            </ButtonGroup>
-
+              variant="outlined"
+              component="label"
+              onClick={() => router.push(`/datasets`)}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span>Datasets</span>
+              <DatasetIcon />
+            </Button>
+          </ButtonGroup>
         </div>
 
         <div className="p-4 w-64">
@@ -142,7 +142,6 @@ export default function Header(props) {
               aria-label="contained primary button group"
               style={{ display: "flex", flexDirection: "column" }}
             >
-
               <Button
                 variant="outlined"
                 component="label"
@@ -234,15 +233,15 @@ export default function Header(props) {
               style={{ display: "flex", flexDirection: "column" }}
             >
               <Button
-              variant="outlined"
-              component="label"
-              onClick={() => router.push(`/databases`)}
-              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-            >
-              <span>Databases</span>
-              <StorageIcon />
-            </Button>
-          </ButtonGroup>
+                variant="outlined"
+                component="label"
+                onClick={() => router.push(`/databases`)}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <span>Databases</span>
+                <StorageIcon />
+              </Button>
+            </ButtonGroup>
 
             <br />
           </div>

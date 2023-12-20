@@ -1,7 +1,7 @@
-import React, {useContext, useState} from 'react';
-import ScrollableList from './ScrollableList';
-import {AppContext} from "@/context/AppContext";
-import {Button} from "@mui/material";
+import React, { useContext, useState } from "react";
+import ScrollableList from "./ScrollableList";
+import { AppContext } from "@/context/AppContext";
+import { Button } from "@mui/material";
 
 // Assuming you have a ScrollableList component already
 // import ScrollableList from './ScrollableList';
@@ -9,7 +9,7 @@ import {Button} from "@mui/material";
 const TrainingComponent = () => {
   const [isTrainingCodes, setIsTrainingCodes] = useState(false);
   const [isTrainingArrows, setIsTrainingArrows] = useState(false);
-  const {trainClusters, trainArrows} = useContext(AppContext);
+  const { trainClusters, trainArrows } = useContext(AppContext);
 
   const handleTrainCodes = async () => {
     // Logic to start/stop training codes
@@ -28,18 +28,22 @@ const TrainingComponent = () => {
     setIsTrainingArrows(false);
   };
 
-    return (
+  return (
     <div style={{ width: "300px" }}>
       <div>
-        <ScrollableList style={{ width: "300px", height: "800px" }}/>
-        <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }}
+        <ScrollableList />
+        <Button
+          type="button"
+          sx={{ backgroundColor: "#1E3A8A", color: "white" }}
           variant="contained"
           color="primary"
           onClick={handleTrainCodes}
         >
           {isTrainingCodes ? "Stop" : "Train Codes"}
         </Button>
-        <Button type="bu" sx={{ backgroundColor: '#1E3A8A', color: 'white' }}
+        <Button
+          type="button"
+          sx={{ backgroundColor: "#1E3A8A", color: "white" }}
           variant="contained"
           onClick={handleTrainArrows}
           disabled={isTrainingArrows}
