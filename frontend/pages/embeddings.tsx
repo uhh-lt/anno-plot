@@ -6,6 +6,7 @@ import { Button, TextField, CircularProgress } from "@mui/material";
 import { BsListColumnsReverse } from "react-icons/bs";
 import CheckIcon from "@mui/icons-material/Check";
 import { Checkbox, FormControlLabel } from "@mui/material";
+import { AppContext } from "@/context/AppContext";
 
 type Embedding = {
   id: string;
@@ -16,14 +17,12 @@ type Embedding = {
  * Data page used to display embeddings with the possibility to export them
  */
 export default function Embeddings() {
+  const { currentProject: projectId } = React.useContext(AppContext);
   const [embeddings, setEmbeddings] = useState<Embedding[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
   const [reducedLength, setReducedLength] = useState(3);
   const [totalCount, setTotalCount] = useState(0);
-  const [projectId, setProjectId] = useState(
-    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
-  );
   const [loading, setLoading] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
   const [batchSize, setBatchSize] = useState(124);
@@ -75,7 +74,6 @@ export default function Embeddings() {
   };
 
   useEffect(() => {
-    setProjectId(parseInt(localStorage.getItem("projectId") ?? "1"));
     fetchAndUpdateEmbeddings(currentPage, pageSize);
   }, [currentPage, pageSize, reducedLength]);
 

@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import {AppContext} from "@/context/AppContext";
 
 type Sentence = {
   sentence_id: number;
@@ -24,14 +25,13 @@ type Sentence = {
  *  Data page used to display sentences of an uploaded dataset
  */
 export default function SentencesPage() {
+  const {currentProject:projectId } = React.useContext(AppContext);
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(100);
   const [datasets, setDatasets] = useState<any[]>([]);
-  const [projectId, setProjectId] = useState(
-    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
-  );
+
   const [datasetId, setDatasetId] = useState<number | undefined>(undefined); // Add datasetId state
 
   const fetchAndUpdateSentences = async (page: number, pageSize: number) => {

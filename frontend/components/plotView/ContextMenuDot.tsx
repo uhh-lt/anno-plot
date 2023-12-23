@@ -7,9 +7,10 @@ import RenameModal from "../modals/RenameModal";
 import ChooseCodeModal from "../modals/ChooseCodeModal";
 import { AppContext } from "@/context/AppContext";
 import { addCodeToSegmentRoute, deleteCodeRoute, deleteSegment, updateCode } from "@/api/api";
+import AddDotToCodeModal from "@/components/AddDotToCodeModal";
 
 export default function ContextMenuCodeDot({ event, nodeId, selected }) {
-  const { currentProject, fetchCodes, fetchProject } = React.useContext(AppContext);
+  const { data, setData, currentProject, fetchCodes, fetchProject } = React.useContext(AppContext);
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
     mouseY: number;
@@ -66,11 +67,15 @@ export default function ContextMenuCodeDot({ event, nodeId, selected }) {
     });
   };
 
-  const handleRemove = () => {
-    console.log("Remove");
-    deleteSegment(currentProject, nodeId).then(() => {
-      fetchProject();
-    });
+  const handleRemove = async () => {
+    setLoading(true);
+    const deleteResponse = await deleteSegment(currentProject, nodeId);
+    if (deleteResponse.status === 200) {
+      const newData = data.filter((dot) => dot.id !== nodeId);
+      setData(newData);
+
+    }
+    setLoading(false);
     handleClose();
   };
 
@@ -88,14 +93,7 @@ export default function ContextMenuCodeDot({ event, nodeId, selected }) {
         <MenuItem onClick={handleChangeCode}>Change Code</MenuItem>
         <MenuItem onClick={handleRemove}>Remove</MenuItem>
       </Menu>
-      <ChooseCodeModal
-        open={showCategoryModal}
-        multiSelect={false}
-        onSave={handleChangeCodeSelection}
-        onCancel={() => {
-          setShowCategoryModal(false);
-        }}
-      />
+      <AddDotToCodeModal dotId={nodeId} projectId={currentProject} open={showCategoryModal} handleClose={() => {setShowCategoryModal(false);handleClose();} } setLoading={()=>{}} />
     </div>
   );
 }

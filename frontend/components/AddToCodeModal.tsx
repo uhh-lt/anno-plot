@@ -1,7 +1,8 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { addCodeToParent, getCodesRoutes } from "@/api/api";
-
+import React, {useContext, useEffect, useState} from "react";
+import {addCodeToParent, getCodesRoutes, updateCode} from "@/api/api";
+import {AppContext} from "@/context/AppContext";
+import {getPath} from "@/utilities";
 /**
  * This component represents a modal for adding a code to a specific parent code. It provides the user
  * with options to search for a code and select a parent code.
@@ -11,41 +12,18 @@ interface AddToCodeModalProps {
   open: boolean;
   handleClose: () => void;
   projectId: number;
-  codeId: number;
+  codeIds: [];
   setLoading: () => void;
 }
 
-function findCodePath(tree, code_id) {
-  let currentNode = tree.find(node => node.code_id === code_id);
-  if (!currentNode) {
-    return null; // the given code_id doesn't exist in the tree
-  }
-
-  let path = currentNode.text;
-
-  // Traverse up the tree to get the path
-  while (currentNode && currentNode.parent_code_id !== null) {
-    currentNode = tree.find(node => node.code_id === currentNode.parent_code_id);
-    if (currentNode) {
-      path = currentNode.text + "-" + path;
-    }
-  }
-
-  return path;
-}
-
 export default function AddToCodeModal(props: AddToCodeModalProps) {
+  const {setLoading, fetchCodes, codes, codeTree} = useContext(AppContext);
   const [checkedId, setCheckedId] = React.useState(0);
-  const [codeList, setCodeList] = React.useState<any[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+
 
   useEffect(() => {
-    getCodesRoutes(props.projectId)
-      .then((response) => {
-        setCodeList(response.data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    setCheckedId(0);
   }, []);
 
   function handleCheckboxChange(selectedLabel: number) {
@@ -56,23 +34,25 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
     props.handleClose();
   }
 
-  function pressAddButton() {
-    props.setLoading();
+  async function pressAddButton() {
+    setLoading(true);
     try {
-      addCodeToParent(props.codeId, props.projectId, checkedId).then(() => {
-        setClosed();
-        props.handleClose();
-        props.setLoading();
-        window.location.reload(); // Reload the page
-      });
+      let parentCodeId = checkedId;
+      if (checkedId === 0) {
+        parentCodeId = -1;
+      }
+      for (const codeId of props.codeIds) {
+        const response = await updateCode(props.projectId, codeId, null, parentCodeId, null);
+      }
+
     } catch (e) {
       console.error("Error adding code:", e);
     }
+    await fetchCodes();
+    setLoading(false);
+    setClosed();
   }
-
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  const filteredCodeList = codeList.filter((code) => code.text.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredCodeList = codes.filter((code) => code.text.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -101,11 +81,17 @@ export default function AddToCodeModal(props: AddToCodeModalProps) {
                 />
                 <RadioGroup aria-label="Add to Category" name="add" value={"Add to Category"}>
                   {filteredCodeList != null &&
-                    filteredCodeList.map((code) => (
+                    filteredCodeList.sort((a, b) => {
+        const pathA = getPath(codes, a).toLowerCase();
+        const pathB = getPath(codes, b).toLowerCase();
+        if (pathA < pathB) return -1;
+        if (pathA > pathB) return 1;
+        return 0;
+    }).map((code) => (
                       <FormControlLabel
                         value={code.code_id}
                         control={<Radio />}
-                        label={findCodePath(codeList, code.code_id)}
+                        label={getPath(codes, code)}
                         key={code.code_id}
                         checked={checkedId === code.code_id}
                         onChange={() => handleCheckboxChange(code.code_id)}

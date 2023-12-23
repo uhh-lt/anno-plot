@@ -15,6 +15,7 @@ import {
 const defaultData = {
   loading: false,
   data: [],
+  setData: (value: any[]) => {},
   codes: [],
   setCodes: (value: any[]) => {},
   codeTree: [],
@@ -42,13 +43,17 @@ const defaultData = {
   showError: false,
   setShowCluster: (value: boolean) => {},
   setShowError: (value: boolean) => {},
+  codeScale: 70,
+  setCodeScale: (value: number) => {},
+  transform : null,
+    setTransform: (value: any) => {},
 };
 
 export const AppContext = createContext(defaultData);
 
 export const AppProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
-
+  const [codeScale, setCodeScale] = useState(70);
   const [projects, setProjects] = useState<any[]>([]);
   const [currentProject, setCurrentProject] = useState(0);
 
@@ -64,7 +69,12 @@ export const AppProvider = ({ children }) => {
   const [config, setConfig] = useState<any>(null);
   const [showCluster, setShowCluster] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [transform, setTransform] = useState(null);
 
+  useEffect(() => {
+    //reset transform when project changes
+    setTransform(null);
+  }, [currentProject]);
   useEffect(() => {
     console.log("Mounting: AppContext");
     fetchProjects();
@@ -195,6 +205,7 @@ export const AppProvider = ({ children }) => {
   const contextValue = {
     loading,
     data,
+    setData,
     codes,
     setCodes,
     codeTree,
@@ -222,6 +233,10 @@ export const AppProvider = ({ children }) => {
     showError,
     setShowCluster,
     setShowError,
+    codeScale,
+    setCodeScale,
+    transform,
+    setTransform,
   };
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;

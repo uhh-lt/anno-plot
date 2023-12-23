@@ -167,7 +167,7 @@ export default function DatasetPage() {
         open={confirmModalOpen}
         handleClose={() => setConfirmModalOpen(false)}
         onDelete={handleDeleteDataset}
-        currentProject={currentProject}
+        projectId={currentProject}
         datasetId={datasetId}
       />
 
@@ -177,7 +177,6 @@ export default function DatasetPage() {
           <UploadModal
             open={open}
             handleClose={() => setOpen(false)}
-            currentProject={currentProject}
             updateDatasets={fetchAndUpdateDatasets}
             setLoading={setLoading}
             setSuccess={setSuccess}

@@ -174,11 +174,13 @@ def update_code_route(
 def merge_codes_route(
     project_id: int, data: MergeOperation, db: Session = Depends(session.get_db)
 ):
+    print("merge_codes_route")
+    print(project_id)
+    print(data)
     try:
-        url = f"http://localhost:5500/projects/{project_id}/codes/?code_name={data.new_code_name}"
-        new_code_response = requests.post(url)
+        new_code_response = insert_code_route(project_id, data.new_code_name, None, db)
 
-        new_code_id = new_code_response.json().get("code_id")
+        new_code_id = new_code_response.__dict__["code_id"]
 
         db.query(models.Code).filter(
             models.Code.project_id == project_id,
@@ -192,8 +194,7 @@ def merge_codes_route(
         db.commit()
 
         for code_id in data.list_of_codes:
-            url = f"http://localhost:5500/projects/{project_id}/codes/{code_id}/"
-            response = requests.delete(url)
+            response = delete_code_route(project_id, code_id, db)
 
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"HTTP Request error: {str(e)}")

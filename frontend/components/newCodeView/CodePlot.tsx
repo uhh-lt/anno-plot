@@ -2,8 +2,8 @@ import { useEffect, useRef, useContext, useState } from "react";
 
 import { AppContext } from "@/context/AppContext";
 import { hexToRGBA } from "@/utilities";
-import { D3_Code_Plot_Manager } from "@/components/newCodeView/D3_Code_Plot_Manager";
-import ContextMenu from "@/components/CodeTree/ContextMenu";
+import { render } from "@/components/newCodeView/D3_Code_Plot_Manager";
+import ContextMenu from "@/components/newCodeView/ContextMenuCodeDot";
 
 export const DotPlotWebGL = ({}) => {
   const ref = useRef(null);
@@ -17,6 +17,9 @@ export const DotPlotWebGL = ({}) => {
     fetchProject,
     currentProject,
     filteredCodes,
+      codeScale,
+      transform,
+        setTransform,
   } = useContext(AppContext);
   const [initialized, setInitialized] = useState(false);
   const [d3Manager, setD3Manager] = useState(null);
@@ -47,9 +50,6 @@ export const DotPlotWebGL = ({}) => {
     if (loading) {
       return;
     }
-    //fetchProject().then(() => {
-    const newManager = new D3_Code_Plot_Manager(ref.current, handleRightClick);
-    setD3Manager(newManager);
     setInitialized(true);
     //});
   }, [loading, currentProject]);
@@ -58,23 +58,22 @@ export const DotPlotWebGL = ({}) => {
     if (!initialized) {
       return;
     }
-
     const d3_data = codeAveragePositions
-      .filter((item) => filteredCodes.includes(item.code_id) && item.segment_count > 0)
+      .filter((item) => filteredCodes.includes(item.code_id) && item.segment_count > 0).sort((a, b) => {
+        return b.segment_count - a.segment_count;
+        })
       .map((item) => ({
         code_id: item.code_id,
         text: item.text,
         x: item.average_position.x,
         y: item.average_position.y,
-        r: item.segment_count * 5,
+        r: item.segment_count*codeScale,
       }));
-    d3Manager.handle_right_click = handleRightClick;
-    d3Manager.ownFunctionZoomColor(d3_data, codes);
-    // Update the plot when data or other dependencies change
+
+    render(d3_data, codes, handleRightClick, transform, setTransform);
     return () => {
-      // Cleanup if necessary, e.g., removing event listeners
     };
-  }, [initialized, codeAveragePositions, errors, codes, filteredCodes, arrows, d3Manager]);
+  }, [initialized, codeAveragePositions, errors, codes, filteredCodes, arrows, d3Manager, codeScale]);
 
   return (
     <>

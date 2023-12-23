@@ -7,6 +7,9 @@ import RenameModal from "../modals/RenameModal";
 import ChooseCodeModal from "../modals/ChooseCodeModal";
 import { AppContext } from "@/context/AppContext";
 import { deleteCodeRoute, updateCode } from "@/api/api";
+import {Merge} from "@mui/icons-material";
+import MergeModal from "@/components/MergeModal";
+import AddToCodeModal from "@/components/AddToCodeModal";
 
 export default function ContextMenuCodeDot({ event, nodeId, selected }) {
   const { currentProject, fetchCodes, fetchProject } = React.useContext(AppContext);
@@ -18,6 +21,7 @@ export default function ContextMenuCodeDot({ event, nodeId, selected }) {
   const [multipleSelected, setMultipleSelected] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showMergeModal, setShowMergeModal] = useState(false);
 
   useEffect(() => {
     if (event !== null && event !== undefined) {
@@ -118,7 +122,7 @@ export default function ContextMenuCodeDot({ event, nodeId, selected }) {
     return null;
   }
   return (
-    <div onContextMenu={handleRightClick} style={{ cursor: "context-menu" }}>
+    <div onContextMenu={handleRightClick} style={{ cursor: "context-menu"}}>
       <Menu
         open={contextMenu !== null}
         onClose={handleClose}
@@ -144,16 +148,8 @@ export default function ContextMenuCodeDot({ event, nodeId, selected }) {
           setShowRenameModal(false);
         }}
       />
-      <ChooseCodeModal
-        open={showCategoryModal}
-        multiSelect={false}
-        onSave={(selectedCategories) => {
-          setNewParent(selectedCategories);
-        }}
-        onCancel={() => {
-          setShowCategoryModal(false);
-        }}
-      />
+      <MergeModal open={showMergeModal} handleClose={() => setShowMergeModal(false)} projectId={currentProject} setLoading={()=>{} } selected={[]}/>
+      <AddToCodeModal open={showCategoryModal} handleClose={() => setShowCategoryModal(false)} projectId={currentProject} codeIds={selected} setLoading={()=>{}}/>
     </div>
   );
 }

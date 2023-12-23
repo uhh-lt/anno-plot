@@ -143,6 +143,7 @@ async def get_plot_endpoint(
     ]
 
     response.update({"data": result_dicts, "length": len(result_dicts), "count": count})
+    print({"length": len(result_dicts), "count": count})
     return response
 
 

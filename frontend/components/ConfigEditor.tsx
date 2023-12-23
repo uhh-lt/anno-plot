@@ -50,7 +50,7 @@ const ConfigEditor = ({}) => {
     localSetConfig(inputConfig);
   };
 
-  if (loading || !config || !inputConfig) {
+  if (loading || !config || !inputConfig || !("model_type" in inputConfig)) {
     return <div>Loading...</div>;
   }
   const reduction_configInputs =
@@ -144,7 +144,7 @@ const ConfigEditor = ({}) => {
         {/* Cluster Model Config */}
         <Grid item xs={12} md={3}>
           <h3>Cluster Model Config</h3>
-          {Object.entries(inputConfig.cluster_config.args).map(([key, value]) => (
+          {Object.entries(inputConfig?.cluster_config?.args).map(([key, value]) => (
             <FormControl key={key} fullWidth margin="normal">
               <InputLabel>{key === "metric" || key === "cluster_selection_method" ? key : ""}</InputLabel>
               {key === "metric" ? (

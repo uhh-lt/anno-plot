@@ -1,6 +1,8 @@
 import { Button, FormControl, FormControlLabel, FormLabel, Modal, Radio, RadioGroup, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { getCodesRoutes, insertCodeRoute, insertCodeRouteWithParent } from "@/api/api";
+import {getPath} from "@/utilities";
+import {AppContext} from "@/context/AppContext";
 
 /**
  * This component represents a modal for adding new codes. It provides the user
@@ -14,40 +16,14 @@ interface AddCodeModalProps {
   setLoading: () => void;
 }
 
-function findCodePath(tree, code_id) {
-  let currentNode = tree.find(node => node.code_id === code_id);
-  if (!currentNode) {
-    return null; // the given code_id doesn't exist in the tree
-  }
-
-  let path = currentNode.text;
-
-  // Traverse up the tree to get the path
-  while (currentNode && currentNode.parent_code_id !== null) {
-    currentNode = tree.find(node => node.code_id === currentNode.parent_code_id);
-    if (currentNode) {
-      path = currentNode.text + "-" + path;
-    }
-  }
-
-  return path;
-}
-
 export default function AddCodeModal(props: AddCodeModalProps) {
   const noneIndex = -1;
+  const { setLoading, codes, codeTree, currentProject, fetchCodes } = useContext(AppContext);
   const [checkedId, setCheckedId] = React.useState(noneIndex);
   const [disabled, setDisabled] = React.useState(true);
   const [inputValue, setInputValue] = React.useState("");
-  const [codeList, setCodeList] = React.useState<any[]>([]);
 
   useEffect(() => {
-    getCodesRoutes(props.projectId)
-      .then((response) => {
-        setCodeList(response.data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
   }, []);
 
   function handleCheckboxChange(selectedLabel: number) {
@@ -66,27 +42,26 @@ export default function AddCodeModal(props: AddCodeModalProps) {
     setInputValue("");
   }
 
-  function pressAddButton() {
-    props.setLoading();
-    if (checkedId == noneIndex) {
+  async function pressAddButton() {
+    setLoading(true);
+    if (checkedId === noneIndex) {
       try {
-        insertCodeRoute(inputValue, props.projectId);
+        const insertResponse = await insertCodeRoute(inputValue, props.projectId);
       } catch (e) {
         console.error("Error adding code:", e);
       }
     } else {
-      insertCodeRouteWithParent(inputValue, props.projectId, checkedId);
+      const insertCodeRoute = await insertCodeRouteWithParent(inputValue, props.projectId, checkedId);
     }
+    await fetchCodes();
     setClosed();
     props.handleClose();
-    props.setLoading();
-    window.location.reload(); // Reload the page
+    setLoading(false);
   }
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const filteredCodeList = codeList.filter((code) => code.text.toLowerCase().includes(searchQuery.toLowerCase()));
-
+  const filteredCodeList = codes.filter((code) => code.text.toLowerCase().includes(searchQuery.toLowerCase()));
   const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
@@ -136,11 +111,17 @@ export default function AddCodeModal(props: AddCodeModalProps) {
                     onChange={() => handleCheckboxChange(noneIndex)}
                   />
                   {filteredCodeList != null &&
-                    filteredCodeList.map((code) => (
+                    filteredCodeList.sort((a, b) => {
+        const pathA = getPath(codes, a).toLowerCase();
+        const pathB = getPath(codes, b).toLowerCase();
+        if (pathA < pathB) return -1;
+        if (pathA > pathB) return 1;
+        return 0;
+    }).map((code) => (
                       <FormControlLabel
                         value={code.code_id}
                         control={<Radio />}
-                        label={findCodePath(codeList, code.code_id)}
+                        label={getPath(codes, code)}
                         key={code.code_id}
                         checked={checkedId === code.code_id}
                         onChange={() => handleCheckboxChange(code.code_id)}

@@ -7,9 +7,11 @@ import RenameModal from "../modals/RenameModal";
 import ChooseCodeModal from "../modals/ChooseCodeModal";
 import { AppContext } from "@/context/AppContext";
 import { deleteCodeRoute, updateCode } from "@/api/api";
+import MergeModal from "@/components/MergeModal";
+import AddToCodeModal from "@/components/AddToCodeModal";
 
 export default function ContextMenu({ event, nodeId, selected }) {
-  const { currentProject, fetchCodes, fetchProject } = React.useContext(AppContext);
+  const { currentProject, fetchCodes, fetchProject, codes} = React.useContext(AppContext);
   const [contextMenu, setContextMenu] = React.useState<{
     mouseX: number;
     mouseY: number;
@@ -18,6 +20,7 @@ export default function ContextMenu({ event, nodeId, selected }) {
   const [multipleSelected, setMultipleSelected] = useState(false);
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [showMergeModal, setShowMergeModal] = useState(false);
 
   useEffect(() => {
     if (selected.includes(nodeId?.toString()) && selected.length > 1) {
@@ -55,16 +58,15 @@ export default function ContextMenu({ event, nodeId, selected }) {
   };
 
   const handleRightClick = (event) => {
-    event.preventDefault(); // Prevent default browser context menu
+    event.preventDefault();
     if (contextMenu) {
-      handleClose(); // Close the current menu if open
+      handleClose();
     }
   };
 
   const handleMerge = () => {
-    setShowRenameModal(true);
-    console.log("Merge");
-    handleClose();
+    console.log("Merge")
+    setShowMergeModal(true);
   };
 
   const handleRename = () => {
@@ -82,12 +84,14 @@ export default function ContextMenu({ event, nodeId, selected }) {
     handleClose();
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
     console.log("Remove");
-    deleteCodeRoute(currentProject, nodeId).then(() => {
-      fetchProject();
-    });
-
+    setLoading(true);
+    for (const id of selected) {
+      await deleteCodeRoute(currentProject, id);
+    }
+    await fetchProject();
+    setLoading(false);
     handleClose();
   };
 
@@ -143,7 +147,7 @@ export default function ContextMenu({ event, nodeId, selected }) {
       </Menu>
       <RenameModal
         open={showRenameModal}
-        currentName={"Test"}
+        currentName={codes.find((code) => code.code_id === nodeId)?.text}
         onSave={(newName) => {
           rename(newName);
         }}
@@ -151,16 +155,8 @@ export default function ContextMenu({ event, nodeId, selected }) {
           setShowRenameModal(false);
         }}
       />
-      <ChooseCodeModal
-        open={showCategoryModal}
-        multiSelect={false}
-        onSave={(selectedCategories) => {
-          setNewParent(selectedCategories);
-        }}
-        onCancel={() => {
-          setShowCategoryModal(false);
-        }}
-      />
+      <MergeModal open={showMergeModal} handleClose={() => setShowMergeModal(false)} projectId={currentProject} setLoading={()=>{}} selected={selected.map((item)=>Number(item))}/>
+      <AddToCodeModal open={showCategoryModal} handleClose={() => setShowCategoryModal(false)} projectId={currentProject} codeIds={selected} setLoading={()=>{}}/>
     </div>
   );
 }

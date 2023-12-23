@@ -211,7 +211,7 @@ const Table = () => {
                   onClick={(event) => handleCategoryFiltering(event, node)}
                   size="small"
                 />
-                <span style={{ lineHeight: "1.5", margin: "0" }}>{node.text}</span>
+                <span style={{ lineHeight: "1.5", margin: "0" }}>{node.text.length > 20 ? "..." + node.text.slice(-17) : node.text}</span>
               </div>
               <div onClick={(e) => e.stopPropagation()}>
                 <ColorPicker

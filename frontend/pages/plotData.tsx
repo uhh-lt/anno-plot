@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useContext} from "react";
 import Header from "@/components/Header";
 import { useReactTable, ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { getPlots, searchSentence, searchCode, searchCluster, searchSegment, exportToFiles } from "@/api/api";
@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
+import {AppContext} from "@/context/AppContext";
 
 type Plot = {
   id: number;
@@ -25,6 +26,7 @@ type Plot = {
  * Data page used to display info about plots such as the sentence, position, segment, code, and cluster
  */
 export default function PlotsPage() {
+  const {currentProject:projectId} = useContext(AppContext);
   const [plots, setPlots] = useState<Plot[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -35,9 +37,6 @@ export default function PlotsPage() {
   const [searchSegmentText, setSearchSegmentText] = useState("");
   const [exportSuccessDialogOpen, setExportSuccessDialogOpen] = useState(false);
 
-  const [projectId, setProjectId] = useState(
-    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
-  );
 
   const plots_columns: ColumnDef<Plot>[] = [
     {

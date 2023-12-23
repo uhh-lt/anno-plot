@@ -5,6 +5,7 @@ import { getReducedEmbeddings, extractReducedEmbeddings } from "@/api/api";
 import { Button, CircularProgress } from "@mui/material";
 import { BsListColumnsReverse } from "react-icons/bs";
 import CheckIcon from "@mui/icons-material/Check";
+import {AppContext} from "@/context/AppContext";
 
 type ReducedEmbedding = {
   reduced_embedding_id: number;
@@ -18,6 +19,7 @@ type ReducedEmbedding = {
  * Data page used for displaying the positions of the reduced embeddings
  */
 export default function ReducedEmbeddingsPage() {
+  const {currentProject:projectId } = React.useContext(AppContext);
   const [reducedEmbeddings, setReducedEmbeddings] = useState<ReducedEmbedding[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -25,9 +27,6 @@ export default function ReducedEmbeddingsPage() {
   const [loading, setLoading] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
 
-  const [projectId, setProjectId] = useState(
-    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
-  );
 
   const reducedEmbeddings_columns: ColumnDef<ReducedEmbedding>[] = [
     {

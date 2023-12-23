@@ -4,6 +4,7 @@ import { Chart as ChartJS, LinearScale, Title, Tooltip, Legend, PointElement, Ar
 import { Bubble, Pie } from "react-chartjs-2";
 import { getCodeStats, getProjects, getCodeTree } from "@/api/api";
 import { CodeSegmentsResponse } from "@/api/types";
+import {getPath} from "@/utilities";
 
 ChartJS.register(LinearScale, PointElement, Title, Tooltip, Legend, ArcElement);
 
@@ -38,7 +39,6 @@ export default function StatsPage() {
       for (let i = 0; i < project_ids.length; i++) {
         const codeStatsResponse: CodeSegmentsResponse = await getCodeStats(project_ids[i]);
         const codeTreeResponse = (await getCodeTree(project_ids[i])).data;
-        console.log("codeTreeResponse", codeTreeResponse);
 
         // merge project with stats
         let project_data = {
@@ -72,8 +72,7 @@ export default function StatsPage() {
           ...project.codeStats.code_segments_count.codes.map((code: any) => code.segment_count),
         );
         let radius = ((code.segment_count - minRadiusOfAllCodes) / (maxRadiusOfAllCodes - minRadiusOfAllCodes)) * 50;
-        let codePath = findCodePath(project.codeTree.codes, code.code_id);
-        code.text = codePath;
+
         if (code.average_position.x == 0 && code.average_position.y == 0) {
           zeroData.push({
             x: code.average_position.x,
@@ -144,7 +143,7 @@ export default function StatsPage() {
     if (!projectData) return null;
 
     return projectData.map((project: any, index: number) => {
-      const labels = project.codeStats.code_segments_count.codes.map((code: any) => code.text);
+      const labels = project.codeStats.code_segments_count.codes.map((code: any) => {return code.text;});
       const data = project.codeStats.code_segments_count.codes.map((code: any) => code.segment_count);
 
       const pieData = {

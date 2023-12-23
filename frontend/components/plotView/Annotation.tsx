@@ -41,14 +41,18 @@ const Annotation = ({ data, color }) => {
       const chartElement = document.getElementById("chart-container");
       const bounding_rect = chartElement.getBoundingClientRect();
       const pos = { x: mousePosition.x, y: mousePosition.y };
-      return !(pos.x < 0 || pos.y < 0 || pos.x > bounding_rect.width || pos.y > bounding_rect.height);
+      const posRef = { x: mousePositionRef.current.x, y: mousePositionRef.current.y };
+        const distance = Math.sqrt(Math.pow(pos.x - posRef.x, 2) + Math.pow(pos.y - posRef.y, 2));
+        return distance < 20 && (!(pos.x < 0 || pos.y < 0 || pos.x > bounding_rect.width || pos.y > bounding_rect.height));
+
+      //return ;
     }
 
     return false;
   };
 
   if (!mousePosition || !isWithinRange()) {
-    return null; // Don't render if mouse position is not set or if it's out of range
+    return null;
   }
   return (
     <div

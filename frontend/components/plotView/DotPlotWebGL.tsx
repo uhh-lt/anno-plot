@@ -1,12 +1,9 @@
 import { useEffect, useRef, useContext, useState } from "react";
-import { D3_WebGL_Plot_Manager } from "./D3_WebGL_Plot_Manager";
+import { render } from "./D3_WebGL_Plot_Manager";
 
 import { AppContext } from "@/context/AppContext";
-//import '../style/DotPlotWebGL.css';
 import Annotation from "./Annotation";
 import { hexToRGBA } from "@/utilities";
-import dynamic from "next/dynamic";
-import ContextMenu from "@/components/CodeTree/ContextMenu";
 import ContextMenuCodeDot from "@/components/plotView/ContextMenuDot";
 
 const createClusterErrorData = (data, errors, show_errors, show_clusters) => {
@@ -102,6 +99,8 @@ export const DotPlotWebGL = () => {
     fetchProject,
     currentProject,
     filteredCodes,
+      transform,
+      setTransform,
   } = useContext(AppContext);
   const [initialized, setInitialized] = useState(false);
   const [d3Manager, setD3Manager] = useState(null);
@@ -132,36 +131,22 @@ export const DotPlotWebGL = () => {
     if (loading) {
       return;
     }
-    //fetchProject().then(() => {
-    const newManager = new D3_WebGL_Plot_Manager(ref.current, handleSetArrow, handleHoverLocal, handleRightClick);
-    setD3Manager(newManager);
     setInitialized(true);
-    //});
-  }, [currentProject]); // loading used to be here
+  }, [currentProject]);
   useEffect(() => {
-    // Initialize the D3 manager with the ref and handler functions
-    if (!initialized) {
-      return;
-    }
-
     // only set dots which should be shown, and represent data
     const filtered_data = data.filter((item) => filteredCodes.includes(item.code));
     const highlightedDataWithError = createClusterErrorData(filtered_data, errors, showError, showCluster);
     let filtered_arrows = arrows.filter((arrow) => filteredCodes.includes(arrow.code_id));
-    console.log(config);
     const dynamic = config?.model_type === "dynamic";
     if (!dynamic) {
       filtered_arrows = [];
     }
-    d3Manager.ownFunctionZoomColor(highlightedDataWithError, codes, filtered_arrows, dynamic);
-    d3Manager.handle_hover = handleHoverLocal;
-    d3Manager.handle_set_arrow = handleSetArrow;
+    render(highlightedDataWithError, codes, filtered_arrows, dynamic, handleSetArrow, handleHoverLocal, handleRightClick, transform, setTransform);
 
-    // Update the plot when data or other dependencies change
     return () => {
-      // Cleanup if necessary, e.g., removing event listeners
     };
-  }, [showCluster, showError, initialized, data, errors, codes, config, filteredCodes, arrows]);
+  }, [data, codes, loading, showCluster, showError, data, filteredCodes, arrows]);
 
   const handleSetArrow = (data) => {
     const arrow_id = data.dot_id;

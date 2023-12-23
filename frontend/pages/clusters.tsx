@@ -5,6 +5,7 @@ import { getClusters, extractClusters } from "@/api/api"; // Import clusters API
 import { BsListColumnsReverse } from "react-icons/bs";
 import CheckIcon from "@mui/icons-material/Check";
 import { Button, CircularProgress } from "@mui/material";
+import {AppContext} from "@/context/AppContext";
 
 type Cluster = {
   model_id: number;
@@ -17,6 +18,7 @@ type Cluster = {
  * Data page used for managing data about the clusters of a project
  */
 export default function ClustersPage() {
+  const { currentProject: projectId } = React.useContext(AppContext);
   const [clusters, setClusters] = useState<Cluster[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -24,9 +26,6 @@ export default function ClustersPage() {
   const [loading, setLoading] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
 
-  const [projectId, setProjectId] = useState(
-    typeof window !== "undefined" ? parseInt(localStorage.getItem("projectId") ?? "1") : 1,
-  );
 
   const clusters_columns: ColumnDef<Cluster>[] = [
     {
