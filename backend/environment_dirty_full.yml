@@ -1,4 +1,4 @@
-name: CodeGraphNoBT2
+name: AnnoPlotNoBT2
 channels:
   - anaconda
   - bitextor

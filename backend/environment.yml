@@ -1,4 +1,4 @@
-name: CodeGraph
+name: AnnoPlot
 channels:
   - conda-forge
   - defaults
